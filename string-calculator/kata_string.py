@@ -44,5 +44,11 @@ class TestStringCalculator(unittest.TestCase):
     def test_mixed_comma_and_newline_profe_example(self):
         self.assertEqual(add("1,2,4\n5,6"), 18)
 
+    def test_custom_delimiter_semicolon(self):
+        self.assertEqual(add("//;\n1;3;6;4"), 14)
+
+    def test_custom_delimiter_pipe(self):
+        self.assertEqual(add("//|\n1|3|6|4"), 14)
+
 if __name__ == "__main__":
     unittest.main()
