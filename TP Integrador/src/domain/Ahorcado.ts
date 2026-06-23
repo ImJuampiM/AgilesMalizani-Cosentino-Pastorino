@@ -29,4 +29,8 @@ export class Ahorcado {
       .split("")
       .every((letra) => this.adivinadas.has(letra));
   }
+
+  estaPerdida(): boolean {
+    return this.vidasRestantes() <= 0;
+  }
 }
