@@ -6,7 +6,7 @@ export class Ahorcado {
   palabraEnmascarada(): string {
     return this.palabra
       .split("")
-      .map((letra) => (this.adivinadas.has(letra) ? letra : "_"))
+      .map((letra) => (this.adivinadas.has(letra.toUpperCase()) ? letra : "_"))
       .join(" ");
   }
 
@@ -15,6 +15,6 @@ export class Ahorcado {
   }
 
   adivinar(letra: string): void {
-    this.adivinadas.add(letra);
+    this.adivinadas.add(letra.toUpperCase());
   }
 }
