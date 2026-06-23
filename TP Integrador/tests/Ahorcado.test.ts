@@ -72,3 +72,9 @@ it("adivinar una letra ya intentada devuelve repetida", () => {
   juego.adivinar("E");
   expect(juego.adivinar("E")).toBe("repetida");
 });
+
+it("adivinar un caracter que no es una letra no descuenta vidas", () => {
+  const juego = new Ahorcado("GATO");
+  juego.adivinar("3");
+  expect(juego.vidasRestantes()).toBe(6);
+});
