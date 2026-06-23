@@ -91,3 +91,7 @@ mayúsculas). Todavía no distingue acierto de fallo ni descuenta vidas.
 - **19:00 — [RED]** Unit Test: fallar una letra descuenta una vida (adivinar una
   letra ausente baja las vidas de 6 a 5). Falla: esperaba 5, recibió 6, porque
   las vidas están fijas en 6. Los otros 5 unit tests siguen en verde.
+- **19:01 — [GREEN]** El cerebro del juego ahora cuenta los fallos: al adivinar,
+  si la letra no está en la palabra registra un fallo, y las vidas restantes son
+  6 menos los fallos. Los 6 unit tests quedan en verde (acertar sigue sin
+  descontar vidas).

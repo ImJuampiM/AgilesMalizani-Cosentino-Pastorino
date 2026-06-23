@@ -1,5 +1,6 @@
 export class Ahorcado {
   private readonly adivinadas = new Set<string>();
+  private fallos = 0;
 
   constructor(private readonly palabra: string) {}
 
@@ -11,10 +12,14 @@ export class Ahorcado {
   }
 
   vidasRestantes(): number {
-    return 6;
+    return 6 - this.fallos;
   }
 
   adivinar(letra: string): void {
-    this.adivinadas.add(letra.toUpperCase());
+    const normalizada = letra.toUpperCase();
+    this.adivinadas.add(normalizada);
+    if (!this.palabra.toUpperCase().includes(normalizada)) {
+      this.fallos++;
+    }
   }
 }
