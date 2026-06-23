@@ -4,4 +4,8 @@ export class Ahorcado {
   palabraEnmascarada(): string {
     return this.palabra.split("").map(() => "_").join(" ");
   }
+
+  vidasRestantes(): number {
+    return 6;
+  }
 }
