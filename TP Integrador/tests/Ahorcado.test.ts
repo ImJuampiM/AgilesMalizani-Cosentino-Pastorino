@@ -59,3 +59,10 @@ it("palabraRevelada muestra la palabra completa con espacios", () => {
   const juego = new Ahorcado("GATO");
   expect(juego.palabraRevelada()).toBe("G A T O");
 });
+
+it("adivinar una letra ya intentada no descuenta vidas adicionales", () => {
+  const juego = new Ahorcado("GATO");
+  juego.adivinar("E");
+  juego.adivinar("E");
+  expect(juego.vidasRestantes()).toBe(5);
+});
