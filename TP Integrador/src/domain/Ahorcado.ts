@@ -11,6 +11,10 @@ export class Ahorcado {
       .join(" ");
   }
 
+  palabraRevelada(): string {
+    return this.palabra.split("").join(" ");
+  }
+
   vidasRestantes(): number {
     return 6 - this.fallos;
   }
