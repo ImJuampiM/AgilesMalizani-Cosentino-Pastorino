@@ -21,6 +21,9 @@ export class Ahorcado {
 
   adivinar(letra: string): void {
     const normalizada = letra.toUpperCase();
+    if (this.adivinadas.has(normalizada)) {
+      return;
+    }
     this.adivinadas.add(normalizada);
     if (!this.palabra.toUpperCase().includes(normalizada)) {
       this.fallos++;
