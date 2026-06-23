@@ -118,3 +118,45 @@ mayúsculas). Todavía no distingue acierto de fallo ni descuenta vidas.
   muestra "GANASTE" cuando le pregunta al cerebro del juego si la partida está
   ganada (la decisión sigue en el dominio, no en la pantalla). Los 4 ATs pasan
   de punta a punta. AT 4 completo.
+
+---
+
+## Sesión 3 — 23/06/2026 (autor: Juan Jose Pastorino)
+
+### Preparación
+
+- **19:30 — [SETUP]** Preparación de entorno en máquina nueva: `npm install`,
+  `npx playwright install chromium`. El binding nativo de Windows
+  (`@rolldown/binding-win32-x64-msvc`) ya vino incluido en esta instalación.
+- **19:31 — [SETUP]** Configuración de identidad de git para Pastorino:
+  `git config user.name "Juan Jose Pastorino"` y
+  `git config user.email "juanjosepastorino@gmail.com"`.
+
+### AT 5 — Perder
+
+> El usuario falla 6 letras, agota las vidas y ve "PERDISTE" con la palabra
+> revelada.
+
+- **19:35 — [RED]** Acceptance Test "perder partida": con "GATO", adivinar 6
+  letras ausentes (B, C, D, F, H, J) debe mostrar el mensaje "PERDISTE" y la
+  palabra revelada "G A T O". Falla en el step del mensaje: esperaba
+  "PERDISTE", pero el elemento `data-testid="message"` no existe porque la app
+  no tiene concepto de partida perdida. Los 4 ATs anteriores siguen en verde.
+  Rojo honesto confirmado antes de tocar código de producción. (`23e1034`)
+- **19:38 — [RED]** Unit Test: la partida está perdida cuando se agotan las
+  vidas (`estaPerdida()` tras 6 fallos). Falla: `juego.estaPerdida is not a
+  function`, porque el método no existe todavía. Los 7 unit tests anteriores
+  siguen en verde. (`b4fc580`)
+- **19:38 — [GREEN]** El cerebro del juego ahora sabe decir si la partida está
+  perdida: `estaPerdida()` devuelve `true` cuando `vidasRestantes() <= 0`. Los
+  8 unit tests quedan en verde. (`02fc482`)
+- **19:40 — [RED]** Unit Test: `palabraRevelada` muestra la palabra completa
+  con espacios (sin enmascarar). Falla: `juego.palabraRevelada is not a
+  function`. Los 8 unit tests anteriores siguen en verde. (`5ce26be`)
+- **19:40 — [GREEN]** `palabraRevelada()` devuelve la palabra completa
+  formateada con espacios entre letras. Los 9 unit tests quedan en verde.
+  (`a4ed333`)
+- **19:41 — [GREEN]** Acceptance Test "perder partida" en verde: la interfaz
+  ahora muestra "PERDISTE" cuando `estaPerdida()` y revela la palabra completa
+  con `palabraRevelada()`. También al ganar se muestra la palabra revelada. Los
+  5 ATs pasan de punta a punta. AT 5 completo. (`3c4bf0a`)

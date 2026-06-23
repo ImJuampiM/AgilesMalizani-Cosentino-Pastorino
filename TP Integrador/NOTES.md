@@ -28,3 +28,10 @@ UTs:
 UTs:
 
 - la partida esta ganada cuando se adivinan todas las letras (`estaGanada()` devuelve true)
+
+## AT 5 — Perder
+
+UTs:
+
+- la partida esta perdida cuando se agotan las vidas (`estaPerdida()` devuelve true tras 6 fallos)
+- palabraRevelada muestra la palabra completa con espacios (`palabraRevelada()` devuelve "G A T O")
