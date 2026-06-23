@@ -43,3 +43,14 @@ it("la partida esta ganada cuando se adivinan todas las letras", () => {
   juego.adivinar("O");
   expect(juego.estaGanada()).toBe(true);
 });
+
+it("la partida esta perdida cuando se agotan las vidas", () => {
+  const juego = new Ahorcado("GATO");
+  juego.adivinar("B");
+  juego.adivinar("C");
+  juego.adivinar("D");
+  juego.adivinar("F");
+  juego.adivinar("H");
+  juego.adivinar("J");
+  expect(juego.estaPerdida()).toBe(true);
+});
