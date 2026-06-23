@@ -16,3 +16,9 @@ it("adivinar una letra presente revela todas sus ocurrencias", () => {
   juego.adivinar("A");
   expect(juego.palabraEnmascarada()).toBe("A _ A");
 });
+
+it("adivinar es case-insensitive", () => {
+  const juego = new Ahorcado("GATO");
+  juego.adivinar("a");
+  expect(juego.palabraEnmascarada()).toBe("_ A _ _");
+});
