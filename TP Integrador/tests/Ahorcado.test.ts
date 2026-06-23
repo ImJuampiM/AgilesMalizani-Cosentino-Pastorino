@@ -34,3 +34,12 @@ it("fallar una letra descuenta una vida", () => {
   juego.adivinar("E");
   expect(juego.vidasRestantes()).toBe(5);
 });
+
+it("la partida esta ganada cuando se adivinan todas las letras", () => {
+  const juego = new Ahorcado("GATO");
+  juego.adivinar("G");
+  juego.adivinar("A");
+  juego.adivinar("T");
+  juego.adivinar("O");
+  expect(juego.estaGanada()).toBe(true);
+});

@@ -108,3 +108,6 @@ mayúsculas). Todavía no distingue acierto de fallo ni descuenta vidas.
   debe mostrar el mensaje "GANASTE". Se agrega un step nuevo reutilizable
   ("se ve el mensaje ..."). Falla porque la app no muestra ningún mensaje de
   victoria todavía. Los otros 3 ATs siguen en verde.
+- **19:11 — [RED]** Unit Test: la partida está ganada cuando se adivinan todas
+  las letras. Falla porque el cerebro del juego aún no sabe decir si ganó
+  (no existe esa consulta). Los otros 6 unit tests siguen en verde.
