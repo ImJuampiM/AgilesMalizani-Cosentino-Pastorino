@@ -78,3 +78,21 @@ it("adivinar un caracter que no es una letra no descuenta vidas", () => {
   juego.adivinar("3");
   expect(juego.vidasRestantes()).toBe(6);
 });
+
+it("adivinar con la partida ya perdida no se procesa", () => {
+  const juego = new Ahorcado("GATO");
+  juego.adivinar("B");
+  juego.adivinar("C");
+  juego.adivinar("D");
+  juego.adivinar("F");
+  juego.adivinar("H");
+  juego.adivinar("J");
+  expect(juego.estaPerdida()).toBe(true);
+
+  juego.adivinar("G");
+  juego.adivinar("A");
+  juego.adivinar("T");
+  juego.adivinar("O");
+
+  expect(juego.estaGanada()).toBe(false);
+});
