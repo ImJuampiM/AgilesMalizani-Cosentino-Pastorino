@@ -54,3 +54,8 @@ it("la partida esta perdida cuando se agotan las vidas", () => {
   juego.adivinar("J");
   expect(juego.estaPerdida()).toBe(true);
 });
+
+it("palabraRevelada muestra la palabra completa con espacios", () => {
+  const juego = new Ahorcado("GATO");
+  expect(juego.palabraRevelada()).toBe("G A T O");
+});
