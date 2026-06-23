@@ -19,15 +19,16 @@ export class Ahorcado {
     return 6 - this.fallos;
   }
 
-  adivinar(letra: string): void {
+  adivinar(letra: string): string {
     const normalizada = letra.toUpperCase();
     if (this.adivinadas.has(normalizada)) {
-      return;
+      return "repetida";
     }
     this.adivinadas.add(normalizada);
     if (!this.palabra.toUpperCase().includes(normalizada)) {
       this.fallos++;
     }
+    return "";
   }
 
   estaGanada(): boolean {
