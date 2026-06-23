@@ -16,3 +16,9 @@ UTs:
 - adivinar una letra presente revela todas sus ocurrencias
 - adivinar es case-insensitive
 - acertar una letra no descuenta vidas (ya verde antes de tocar produccion, no hay logica de descuento aun)
+
+## AT 3 — Fallar letra
+
+UTs:
+
+- fallar una letra descuenta una vida (`vidasRestantes()` baja de 6 a 5 al adivinar una letra ausente)

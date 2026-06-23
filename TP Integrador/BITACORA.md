@@ -95,3 +95,6 @@ mayúsculas). Todavía no distingue acierto de fallo ni descuenta vidas.
   si la letra no está en la palabra registra un fallo, y las vidas restantes son
   6 menos los fallos. Los 6 unit tests quedan en verde (acertar sigue sin
   descontar vidas).
+- **19:02 — [GREEN]** Acceptance Test "fallar letra" en verde: los 3 ATs pasan
+  de punta a punta. No hizo falta tocar la interfaz, porque ya mostraba las
+  vidas leyéndolas del cerebro del juego (separación lógica/UI). AT 3 completo.
