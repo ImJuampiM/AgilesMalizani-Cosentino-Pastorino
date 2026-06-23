@@ -6,4 +6,5 @@ Lista de Acceptance Tests y los Unit Tests del dominio (`Ahorcado`) que los resp
 
 UTs:
 
-- (pendiente)
+- una partida nueva muestra la palabra enmascarada con guiones (`palabraEnmascarada()`)
+- una partida nueva empieza con 6 vidas (`vidasRestantes()`)
