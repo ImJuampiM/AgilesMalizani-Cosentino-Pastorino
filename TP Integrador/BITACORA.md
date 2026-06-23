@@ -114,3 +114,7 @@ mayúsculas). Todavía no distingue acierto de fallo ni descuenta vidas.
 - **19:13 — [GREEN]** El cerebro del juego ahora sabe decir si la partida está
   ganada: lo está cuando todas las letras de la palabra fueron adivinadas. Los
   7 unit tests quedan en verde.
+- **19:14 — [GREEN]** Acceptance Test "ganar" en verde: la interfaz ahora
+  muestra "GANASTE" cuando le pregunta al cerebro del juego si la partida está
+  ganada (la decisión sigue en el dominio, no en la pantalla). Los 4 ATs pasan
+  de punta a punta. AT 4 completo.

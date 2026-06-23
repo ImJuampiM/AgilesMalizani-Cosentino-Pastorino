@@ -22,3 +22,9 @@ UTs:
 UTs:
 
 - fallar una letra descuenta una vida (`vidasRestantes()` baja de 6 a 5 al adivinar una letra ausente)
+
+## AT 4 — Ganar
+
+UTs:
+
+- la partida esta ganada cuando se adivinan todas las letras (`estaGanada()` devuelve true)

@@ -6,6 +6,7 @@ export function mountApp(root: HTMLElement, juego: Ahorcado): void {
       <div data-testid="word">${juego.palabraEnmascarada()}</div>
       <div data-testid="lives">${juego.vidasRestantes()}</div>
       <input type="text" />
+      ${juego.estaGanada() ? `<div data-testid="message">GANASTE</div>` : ""}
     `;
     const input = root.querySelector("input")!;
     input.addEventListener("keydown", (evento) => {
