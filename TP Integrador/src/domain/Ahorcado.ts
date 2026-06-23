@@ -22,4 +22,11 @@ export class Ahorcado {
       this.fallos++;
     }
   }
+
+  estaGanada(): boolean {
+    return this.palabra
+      .toUpperCase()
+      .split("")
+      .every((letra) => this.adivinadas.has(letra));
+  }
 }

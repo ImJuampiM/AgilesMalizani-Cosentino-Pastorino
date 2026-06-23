@@ -111,3 +111,6 @@ mayúsculas). Todavía no distingue acierto de fallo ni descuenta vidas.
 - **19:11 — [RED]** Unit Test: la partida está ganada cuando se adivinan todas
   las letras. Falla porque el cerebro del juego aún no sabe decir si ganó
   (no existe esa consulta). Los otros 6 unit tests siguen en verde.
+- **19:13 — [GREEN]** El cerebro del juego ahora sabe decir si la partida está
+  ganada: lo está cuando todas las letras de la palabra fueron adivinadas. Los
+  7 unit tests quedan en verde.
