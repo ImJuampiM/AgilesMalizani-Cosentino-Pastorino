@@ -98,3 +98,13 @@ mayúsculas). Todavía no distingue acierto de fallo ni descuenta vidas.
 - **19:02 — [GREEN]** Acceptance Test "fallar letra" en verde: los 3 ATs pasan
   de punta a punta. No hizo falta tocar la interfaz, porque ya mostraba las
   vidas leyéndolas del cerebro del juego (separación lógica/UI). AT 3 completo.
+
+### AT 4 — Ganar
+
+> El usuario completa todas las letras de la palabra y aparece el mensaje
+> "GANASTE".
+
+- **19:15 — [RED]** Acceptance Test "ganar": con "GATO", adivinar G, A, T y O
+  debe mostrar el mensaje "GANASTE". Se agrega un step nuevo reutilizable
+  ("se ve el mensaje ..."). Falla porque la app no muestra ningún mensaje de
+  victoria todavía. Los otros 3 ATs siguen en verde.
