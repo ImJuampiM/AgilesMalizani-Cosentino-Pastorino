@@ -40,32 +40,18 @@ Resumen del modelo mental:
 - **Rotación de autor:** la guía pide que cada test nuevo lo arranque un
   integrante distinto del grupo, commiteando con su propia identidad de git.
 
-## 1.bis. Estado de la rotación de autor (LEER — punto débil a corregir)
-
-La regla 7 de la guía (rotación de autor) es **no negociable** y hoy es lo más
-flojo del trabajo. Estado real al cierre del AT 4:
+## 1.bis. Estado de la rotación de autor
 
 - **AT 1 y AT 2:** todos los tests los hizo **Cosentino** (`lucio`).
 - **AT 3 y AT 4:** todos los tests los hizo **Malizani** (`JuanPabloMalizani`).
-- **Pastorino todavía NO participó del TP del Ahorcado.** (Tiene commits en
-  otras partes del repo, con autor `unknown`, pero no en esta carpeta.)
+- **AT 5 y AT 6:** los hizo **Pastorino** (`Juan Jose Pastorino`).
 
-Es decir: hay rotación por *bloque de ATs*, no *por test*, y falta un
-integrante. **Qué hacer en las próximas sesiones (sin deshacer nada de lo
-hecho):**
+Los tres integrantes tienen participación en el TP. De aquí en adelante
+conviene seguir rotando **test por test**. **El próximo AT (el 7) debería
+arrancarlo Cosentino o Malizani** para mantener la rotación.
 
-1. Que el **próximo AT (el 5, Perder) lo arranque Pastorino** con su propia
-   identidad, y de ahí en más roten **test por test**.
-2. Que cada integrante fije **una sola** identidad de git consistente
-   (`git config user.name` y `git config user.email`) antes de commitear.
-   Hoy hay 5 firmas para 3 personas y eso ensucia `git shortlog -sne`:
-   - Malizani: `JuanPabloMalizani <jmalizani@frro.utn.edu.ar>` y
-     `Juan Pablo Malizani <…ImJuampiM@…>`.
-   - Cosentino: `lucio <luciocosen@gmail.com>` y
-     `Lucio Cosentino <…Luciocos@…>`.
-   - Pastorino: `unknown <juanjosepastorino@gmail.com>` (sin nombre).
-   La historia vieja NO se reescribe (rebase es riesgoso); se ordena de acá
-   en adelante.
+Que cada integrante fije **una sola** identidad de git consistente antes de
+commitear para no ensuciar `git shortlog -sne`.
 
 ## 2. Stack instalado y cómo correrlo
 
@@ -102,12 +88,14 @@ TP Integrador/
       main.ts                 ← mountApp(root, juego): pinta word/lives/input/mensaje
       index.ts                ← arranque: lee ?word= de la URL (default "GATO")
   tests/
-    Ahorcado.test.ts          ← 7 unit tests, todos en verde (ver abajo)
+    Ahorcado.test.ts          ← 11 unit tests, todos en verde (ver abajo)
   features/
     iniciar-partida.feature
     acertar-letra.feature
     fallar-letra.feature
     ganar.feature
+    perder-partida.feature
+    letra-repetida.feature
     steps/
       ahorcado.steps.ts       ← 5 steps reutilizables (Given/When/Then)
 ```
@@ -131,16 +119,24 @@ export class Ahorcado {
       .join(" ");
   }
 
+  palabraRevelada(): string {
+    return this.palabra.split("").join(" ");
+  }
+
   vidasRestantes(): number {
     return 6 - this.fallos;
   }
 
-  adivinar(letra: string): void {
+  adivinar(letra: string): string {
     const normalizada = letra.toUpperCase();
+    if (this.adivinadas.has(normalizada)) {
+      return "repetida";
+    }
     this.adivinadas.add(normalizada);
     if (!this.palabra.toUpperCase().includes(normalizada)) {
       this.fallos++;
     }
+    return "";
   }
 
   estaGanada(): boolean {
@@ -149,19 +145,24 @@ export class Ahorcado {
       .split("")
       .every((letra) => this.adivinadas.has(letra));
   }
+
+  estaPerdida(): boolean {
+    return this.vidasRestantes() <= 0;
+  }
 }
 ```
 
 **Notas para la próxima sesión:**
 
-- `vidasRestantes()` ya descuenta: es `6 - fallos`. Todavía **no hay tope en 0
-  ni concepto de "partida perdida"** — eso lo va a forzar el **AT 5 (Perder)**.
-- `adivinar` guarda en `adivinadas` **tanto aciertos como fallos**. Hoy es
-  inofensivo (una letra ausente nunca se revela), pero cuando llegue el
-  **AT 6 (letra repetida)** probablemente convenga distinguir mejor aciertos
-  de fallos para no penalizar dos veces la misma letra.
-- `estaGanada()` es true cuando todas las letras de la palabra fueron
-  adivinadas. No existe todavía `estaPerdida()` ni un estado de "terminada".
+- `adivinar()` ahora retorna `string`: `"repetida"` si la letra ya fue
+  intentada (early return, sin penalizar), `""` en caso normal.
+- `estaPerdida()` devuelve `true` cuando `vidasRestantes() <= 0`.
+- `palabraRevelada()` devuelve la palabra completa con espacios entre letras.
+- Todavía **no hay validación de entrada** (no se verifica que la letra sea
+  una sola letra, ni que no sea un número o símbolo) — eso lo va a forzar el
+  **AT 7 (Entrada inválida)**.
+- Todavía **no se impide jugar con la partida terminada** — eso también entra
+  en el AT 7.
 
 ## 5. Código de UI completo, tal como quedó
 
@@ -171,17 +172,30 @@ export class Ahorcado {
 import { Ahorcado } from "../domain/Ahorcado";
 
 export function mountApp(root: HTMLElement, juego: Ahorcado): void {
+  let mensajeRepetida = "";
+
   function render(): void {
+    let mensaje = "";
+    if (juego.estaGanada()) {
+      mensaje = `<div data-testid="message">GANASTE</div>`;
+    } else if (juego.estaPerdida()) {
+      mensaje = `<div data-testid="message">PERDISTE</div>`;
+    } else if (mensajeRepetida) {
+      mensaje = `<div data-testid="message">${mensajeRepetida}</div>`;
+    }
+
     root.innerHTML = `
-      <div data-testid="word">${juego.palabraEnmascarada()}</div>
+      <div data-testid="word">${juego.estaGanada() || juego.estaPerdida() ? juego.palabraRevelada() : juego.palabraEnmascarada()}</div>
       <div data-testid="lives">${juego.vidasRestantes()}</div>
       <input type="text" />
-      ${juego.estaGanada() ? `<div data-testid="message">GANASTE</div>` : ""}
+      ${mensaje}
     `;
     const input = root.querySelector("input")!;
     input.addEventListener("keydown", (evento) => {
       if (evento.key === "Enter") {
-        juego.adivinar(input.value);
+        const valor = input.value.toUpperCase();
+        const resultado = juego.adivinar(input.value);
+        mensajeRepetida = resultado === "repetida" ? `Ya intentaste la letra ${valor}` : "";
         render();
       }
     });
@@ -206,28 +220,34 @@ if (root) {
 }
 ```
 
-El `data-testid="message"` solo aparece cuando `juego.estaGanada()` es true.
-La decisión sigue en el dominio: la UI solo *pregunta*. Sin estilos todavía.
+La UI ahora maneja tres mensajes posibles: "GANASTE", "PERDISTE" y "Ya
+intentaste la letra X". Al ganar o perder muestra la palabra revelada. La
+lógica de negocio sigue en el dominio.
 
 ## 6. Tests existentes (todos en verde)
 
-`tests/Ahorcado.test.ts` (Vitest, **7 tests**):
+`tests/Ahorcado.test.ts` (Vitest, **11 tests**):
 
 1. una partida nueva muestra la palabra enmascarada con guiones
 2. una partida nueva empieza con 6 vidas
 3. adivinar una letra presente revela todas sus ocurrencias
 4. adivinar es case-insensitive
-5. acertar una letra no descuenta vidas *(ya estaba verde al escribirlo; sin
-   ciclo rojo real, documentado honestamente — importante para la defensa)*
-6. fallar una letra descuenta una vida *(vidasRestantes 6→5)*
-7. la partida está ganada cuando se adivinan todas las letras *(estaGanada)*
+5. acertar una letra no descuenta vidas *(ya verde al escribirlo)*
+6. fallar una letra descuenta una vida
+7. la partida esta ganada cuando se adivinan todas las letras
+8. la partida esta perdida cuando se agotan las vidas
+9. palabraRevelada muestra la palabra completa con espacios
+10. adivinar una letra ya intentada no descuenta vidas adicionales
+11. adivinar una letra ya intentada devuelve "repetida"
 
-AT en `features/` (**4 features**, todos pasan con `npm run at`):
+AT en `features/` (**6 features**, todos pasan con `npm run at`):
 
 - `iniciar-partida.feature`: "GATO" → ve `_ _ _ _` y 6 vidas.
 - `acertar-letra.feature`: adivina "A" → ve `_ A _ _` y sigue en 6 vidas.
-- `fallar-letra.feature`: adivina "E" (ausente) → sigue `_ _ _ _` y baja a 5 vidas.
+- `fallar-letra.feature`: adivina "E" → sigue `_ _ _ _` y baja a 5 vidas.
 - `ganar.feature`: adivina G-A-T-O → ve el mensaje "GANASTE".
+- `perder-partida.feature`: 6 fallos (B-C-D-F-H-J) → ve "PERDISTE" y "G A T O".
+- `letra-repetida.feature`: adivina "E" dos veces → vidas en 5 y "Ya intentaste la letra E".
 
 `features/steps/ahorcado.steps.ts` define y reutiliza **5 steps**:
 
@@ -241,6 +261,7 @@ AT en `features/` (**4 features**, todos pasan con `npm run at`):
 
 ```
 chore: setup proyecto (vitest + playwright-bdd)
+─────────────────────  AT 1-2 — autor: Cosentino (lucio)  ──────────────────
 RED:   AT iniciar partida - ve palabra enmascarada y 6 vidas
 RED:   UT palabraEnmascarada con guiones para palabra nueva
 GREEN: palabraEnmascarada devuelve guiones separados por espacio
@@ -256,19 +277,31 @@ GREEN: adivinar y palabraEnmascarada case-insensitive
 test:  documentar que acertar letra no descuenta vidas (ya verde)
 GREEN: AT acertar letra - input cableado a Ahorcado.adivinar
 docs:  completar lista de UTs del AT acertar letra
-docs:  CONTINUAR.md (resumen para la próxima sesión, + ampliación)
-─────────────────────  AT 3 (Fallar letra) — autor: Malizani  ──────────────
+docs:  CONTINUAR.md
+─────────────────────  AT 3-4 — autor: Malizani  ───────────────────────────
 RED:   AT fallar letra - al fallar una letra bajan las vidas a 5
-docs:  agregar bitacora del TP con el avance paso a paso
 RED:   UT fallar una letra descuenta una vida
 GREEN: vidasRestantes descuenta los fallos al adivinar letra ausente
 GREEN: AT fallar letra - las vidas bajan a 5 sin tocar la UI
-─────────────────────  AT 4 (Ganar) — autor: Malizani  ─────────────────────
 RED:   AT ganar - completar la palabra muestra el mensaje GANASTE
-docs:  bitacora - RED del AT 4 ganar
 RED:   UT la partida esta ganada cuando se adivinan todas las letras
 GREEN: estaGanada devuelve true cuando se adivinaron todas las letras
 GREEN: AT ganar - la UI muestra GANASTE al completar la palabra
+─────────────────────  AT 5-6 — autor: Pastorino  ──────────────────────────
+RED:   AT perder partida - 6 fallos muestra PERDISTE y la palabra revelada
+RED:   UT la partida esta perdida cuando se agotan las vidas
+GREEN: estaPerdida devuelve true cuando se agotan las 6 vidas
+RED:   UT palabraRevelada muestra la palabra completa con espacios
+GREEN: palabraRevelada devuelve la palabra completa con espacios
+GREEN: AT perder partida - la UI muestra PERDISTE y la palabra revelada
+docs:  bitacora y lista de UTs del AT 5
+RED:   AT letra repetida - no penaliza e informa al repetir letra
+RED:   UT adivinar letra ya intentada no descuenta vidas adicionales
+GREEN: adivinar ignora letra ya intentada sin penalizar
+RED:   UT adivinar letra ya intentada devuelve repetida
+GREEN: adivinar devuelve repetida cuando la letra ya fue intentada
+GREEN: AT letra repetida - la UI informa Ya intentaste la letra X
+docs:  bitacora y lista de UTs del AT 6
 ```
 
 Para verificar en cualquier momento:
@@ -279,27 +312,28 @@ git log --format='%h  %an  %ad  %s' --date=iso   # autor + fecha + mensaje
 git shortlog -sne                                # commits por autor (rotación)
 ```
 
-## 8. Troubleshooting que ya pisamos (para no perder tiempo de nuevo)
+## 8. Troubleshooting que ya pisamos
 
 - **Máquina nueva con Windows — `npm run at` no arranca el dev server:** al
-  correr por primera vez en una máquina Windows, Vite/rolldown crashea con
-  `Cannot find native binding ... @rolldown/binding-win32-x64-msvc`. Es el bug
-  conocido de npm con dependencias opcionales: el `package-lock.json`
+  correr por primera vez en una máquina Windows, Vite/rolldown puede crashear
+  con `Cannot find native binding ... @rolldown/binding-win32-x64-msvc`. Es
+  el bug conocido de npm con dependencias opcionales: el `package-lock.json`
   versionado fue generado en macOS y no lista el binario nativo de Windows.
-  **Fix usado:** `npm install --no-save @rolldown/binding-win32-x64-msvc@<misma
-  versión que rolldown>` (el binario queda en `node_modules`, que está
-  ignorado; restaurar el `package-lock.json` después si npm lo tocó, para no
-  versionar algo específico de Windows). Ver la versión de rolldown con
+  **Fix:** `npm install --no-save @rolldown/binding-win32-x64-msvc@<misma
+  versión que rolldown>`. Verificar versión con
   `node -e "console.log(require('./node_modules/rolldown/package.json').version)"`.
+  En la sesión 3 el binding ya vino incluido en `npm install`.
 - **Máquina nueva — falta el navegador de Playwright:** si `npm run at` falla
   con `browserType.launch: Executable doesn't exist`, correr
   `npx playwright install chromium` (~114 MB).
-- **Aviso de versión de Node:** Vite 8 pide Node ≥20.19; con Node 20.13 sale un
-  warning pero funcionó igual. Si da problemas, actualizar Node.
-- **Flake con 2+ workers en arranque en frío:** la primera corrida de `npm run
-  at` puede pegar timeout en `getByRole('textbox')` por el arranque en frío del
-  webServer compartido. Re-correr suele bastar; si persiste, aislar con
-  `npx playwright test --workers=1`.
+- **`npm run at` falla con "bddgen no se reconoce":** en Windows/PowerShell
+  el script `bddgen && playwright test` puede fallar. Usar directamente:
+  `npx bddgen; npx playwright test`.
+- **Política de ejecución de PowerShell:** si `npm` falla con
+  `UnauthorizedAccess`, usar:
+  `powershell -ExecutionPolicy Bypass -Command "npm run ..."`.
+- **Aviso de versión de Node:** Vite 8 pide Node ≥20.19; con Node 20.13 sale
+  un warning pero funcionó igual.
 
 ## 9. Qué falta (escalera de ATs, orden sugerido — no obligatorio)
 
@@ -309,22 +343,38 @@ git shortlog -sne                                # commits por autor (rotación)
 | 2 | Acertar letra | "A" → `_ A _ _`, vidas 6 | ✅ verde |
 | 3 | Fallar letra | "E" → `_ _ _ _`, vidas 6→5 | ✅ verde |
 | 4 | Ganar | completa la palabra → "GANASTE" | ✅ verde |
-| 5 | **Perder** (siguiente) | 6 fallos → "PERDISTE" + palabra revelada | ⬜ pendiente |
-| 6 | Letra repetida | re-tipear letra ya intentada → no penaliza, informa | ⬜ pendiente |
-| 7 | Entrada inválida | tipea no-letra, o juega con partida terminada | ⬜ pendiente |
+| 5 | Perder | 6 fallos → "PERDISTE" + palabra revelada | ✅ verde |
+| 6 | Letra repetida | re-tipear letra ya intentada → no penaliza, informa | ✅ verde |
+| 7 | **Entrada inválida** (siguiente) | tipea no-letra, o juega con partida terminada | ⬜ pendiente |
 
-## 10. Cómo seguir paso a paso — AT 5 (Perder)
+## 10. Cómo seguir paso a paso — AT 7 (Entrada inválida)
 
-> **Idealmente este AT lo arranca Pastorino**, con su identidad de git, para
-> empezar la rotación real (ver §1.bis).
+> **Rotación:** el AT 7 debería arrancarlo **Cosentino o Malizani** (los AT
+> 5-6 los hizo Pastorino).
 
-1. **Escribir el feature** `features/perder-partida.feature`. Necesita 6 fallos
-   para agotar las vidas. Borrador:
+El AT 7 cubre dos comportamientos:
+1. **Entrada no válida:** el jugador tipea algo que no es una sola letra
+   (un número, un símbolo, una cadena vacía, o más de un carácter). La app
+   no debe procesar la jugada y debe informar al usuario.
+2. **Jugar con la partida terminada:** el jugador tipea una letra cuando
+   la partida ya está ganada o perdida. La app no debe procesar la jugada.
+
+Se puede dividir en uno o dos features; decisión del grupo.
+
+### Paso a paso sugerido:
+
+1. **Escribir el feature** `features/entrada-invalida.feature`. Borrador:
    ```gherkin
    # language: es
-   Característica: Perder
+   Característica: Entrada inválida
 
-     Escenario: El jugador agota las vidas
+     Escenario: El jugador tipea algo que no es una letra
+       Dado una partida con la palabra "GATO"
+       Cuando el jugador adivina la letra "3"
+       Entonces se ven 6 vidas
+       Y se ve el mensaje "Entrada no válida"
+
+     Escenario: El jugador intenta jugar con la partida terminada
        Dado una partida con la palabra "GATO"
        Cuando el jugador adivina la letra "B"
        Y el jugador adivina la letra "C"
@@ -332,45 +382,45 @@ git shortlog -sne                                # commits por autor (rotación)
        Y el jugador adivina la letra "F"
        Y el jugador adivina la letra "H"
        Y el jugador adivina la letra "J"
-       Entonces se ve el mensaje "PERDISTE"
+       Y el jugador adivina la letra "A"
+       Entonces se ven 0 vidas
+       Y se ve el mensaje "PERDISTE"
    ```
-   (Elegir 6 letras que NO estén en "GATO". El step "se ve el mensaje {string}"
-   ya existe y se reutiliza; quizá haga falta un step nuevo para "se revela la
-   palabra" si el grupo decide mostrarla.)
-2. **Correr `npm run at`** → predicción: rojo, porque la app no muestra
-   "PERDISTE". Commitear el rojo (`RED: AT perder ...`) **antes** de tocar
-   `Ahorcado.ts`.
+   (Elegir los escenarios que el grupo considere representativos.)
+
+2. **Correr `npm run at`** → predicción: rojo, porque la app no valida
+   entrada. Commitear el rojo (`RED: AT entrada inválida ...`) **antes**
+   de tocar `Ahorcado.ts`.
+
 3. **Enumerar los UTs** (a `NOTES.md`). Mínimo probable:
-   - la partida está perdida cuando se agotan las vidas (`estaPerdida()` true
-     tras 6 fallos) → fuerza un método nuevo en `Ahorcado`.
-   - (decisión de diseño) ¿las vidas se frenan en 0?, ¿se puede seguir jugando
-     con la partida terminada? (esto último puede empujar hacia el AT 7).
-4. **Loop interno**, un UT a la vez: test → predecir rojo → correr → confirmar →
-   commit `RED:` → mínimo código en `Ahorcado.ts` (ej. `estaPerdida()` =
-   `vidasRestantes() <= 0`) → verde → commit `GREEN:` → ¿refactor?
-5. **Cablear UI:** en `main.ts`, mostrar `<div data-testid="message">PERDISTE
-   </div>` cuando `juego.estaPerdida()`. OJO: hoy el mensaje de "GANASTE" se
-   decide con un ternario; con dos mensajes posibles conviene pensar cómo
-   quedan (¿un solo lugar que muestre GANASTE o PERDISTE según el estado?).
-   La lógica del *qué* mensaje corresponde sigue yendo en `Ahorcado`.
-6. **Correr `npm run at`**, confirmar verde, **abrir `npm run dev`** y jugar a
-   mano (fallar 6 veces, ver "PERDISTE").
+   - adivinar una entrada que no es una letra no la procesa ni penaliza
+   - adivinar con la partida terminada no la procesa
+   - (decisión de diseño) ¿`adivinar()` devuelve un string como "invalida"
+     o "terminada" para que la UI pueda informar?
+
+4. **Loop interno**, un UT a la vez: test → predecir rojo → correr →
+   confirmar → commit `RED:` → mínimo código en `Ahorcado.ts` → verde →
+   commit `GREEN:` → ¿refactor?
+
+5. **Cablear UI:** en `main.ts`, manejar los nuevos retornos de `adivinar()`
+   o impedir el envío cuando la partida terminó.
+
+6. **Correr `npm run at`**, confirmar verde, **abrir `npm run dev`** y jugar
+   a mano.
+
 7. **Commit `GREEN:` del AT**, actualizar `NOTES.md` y `BITACORA.md`, **push**
    (solo con el tope en verde).
-8. Pasar al AT 6 (Letra repetida), repitiendo el ciclo y **rotando autor**.
 
 ## 11. Reglas a no romper (de la guía, no negociables)
 
 - **No test, no code.** Nunca producción sin un test fallando que lo exija.
 - **Un paso a la vez.** No adelantarse a dos ATs o dos UTs juntos.
-- **Predecir antes de correr.** Decir si va a ser rojo o verde y por qué, después
-  correr y confirmar.
+- **Predecir antes de correr.** Decir si va a ser rojo o verde y por qué,
+  después correr y confirmar.
 - **Mínimo código.** Solo lo que el test actual exige.
 - **El nombre del test lo decide el grupo**, no la IA, aunque la IA tipee.
 - **Commit `RED:` apenas se ve el rojo**, antes de escribir producción.
 - **Push solo con el tope en verde.**
-- **Rotación de autor real** (ver §1.bis): cada test nuevo lo arranca alguien
-  distinto, con su propia cuenta de git. Es hoy el punto más flojo del trabajo.
+- **Rotación de autor real**: cada test nuevo lo arranca alguien distinto,
+  con su propia cuenta de git.
 - **Registrar cada paso en `BITACORA.md`** a medida que se avanza.
-```
-

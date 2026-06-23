@@ -123,15 +123,6 @@ mayúsculas). Todavía no distingue acierto de fallo ni descuenta vidas.
 
 ## Sesión 3 — 23/06/2026 (autor: Juan Jose Pastorino)
 
-### Preparación
-
-- **19:30 — [SETUP]** Preparación de entorno en máquina nueva: `npm install`,
-  `npx playwright install chromium`. El binding nativo de Windows
-  (`@rolldown/binding-win32-x64-msvc`) ya vino incluido en esta instalación.
-- **19:31 — [SETUP]** Configuración de identidad de git para Pastorino:
-  `git config user.name "Juan Jose Pastorino"` y
-  `git config user.email "juanjosepastorino@gmail.com"`.
-
 ### AT 5 — Perder
 
 > El usuario falla 6 letras, agota las vidas y ve "PERDISTE" con la palabra
@@ -161,7 +152,7 @@ mayúsculas). Todavía no distingue acierto de fallo ni descuenta vidas.
   con `palabraRevelada()`. También al ganar se muestra la palabra revelada. Los
   5 ATs pasan de punta a punta. AT 5 completo. (`3c4bf0a`)
 
-### AT 6 — Letra repetida (autor: lucio)
+### AT 6 — Letra repetida (autor: Juan Jose Pastorino)
 
 > El usuario re-tipea una letra ya intentada: no pierde vida y la app informa.
 
