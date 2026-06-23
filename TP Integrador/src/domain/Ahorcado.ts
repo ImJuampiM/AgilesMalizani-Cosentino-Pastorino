@@ -21,6 +21,9 @@ export class Ahorcado {
 
   adivinar(letra: string): string {
     const normalizada = letra.toUpperCase();
+    if (!/^[A-Z]$/.test(normalizada)) {
+      return "invalida";
+    }
     if (this.adivinadas.has(normalizada)) {
       return "repetida";
     }
