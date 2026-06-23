@@ -1,7 +1,7 @@
 import { Ahorcado } from "../domain/Ahorcado";
 
 export function mountApp(root: HTMLElement, juego: Ahorcado): void {
-  let mensajeRepetida = "";
+  let mensajeAviso = "";
 
   function render(): void {
     let mensaje = "";
@@ -9,8 +9,8 @@ export function mountApp(root: HTMLElement, juego: Ahorcado): void {
       mensaje = `<div data-testid="message">GANASTE</div>`;
     } else if (juego.estaPerdida()) {
       mensaje = `<div data-testid="message">PERDISTE</div>`;
-    } else if (mensajeRepetida) {
-      mensaje = `<div data-testid="message">${mensajeRepetida}</div>`;
+    } else if (mensajeAviso) {
+      mensaje = `<div data-testid="message">${mensajeAviso}</div>`;
     }
 
     root.innerHTML = `
@@ -24,7 +24,13 @@ export function mountApp(root: HTMLElement, juego: Ahorcado): void {
       if (evento.key === "Enter") {
         const valor = input.value.toUpperCase();
         const resultado = juego.adivinar(input.value);
-        mensajeRepetida = resultado === "repetida" ? `Ya intentaste la letra ${valor}` : "";
+        if (resultado === "repetida") {
+          mensajeAviso = `Ya intentaste la letra ${valor}`;
+        } else if (resultado === "invalida") {
+          mensajeAviso = "Entrada no válida";
+        } else {
+          mensajeAviso = "";
+        }
         render();
       }
     });
