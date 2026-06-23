@@ -160,3 +160,27 @@ mayúsculas). Todavía no distingue acierto de fallo ni descuenta vidas.
   ahora muestra "PERDISTE" cuando `estaPerdida()` y revela la palabra completa
   con `palabraRevelada()`. También al ganar se muestra la palabra revelada. Los
   5 ATs pasan de punta a punta. AT 5 completo. (`3c4bf0a`)
+
+### AT 6 — Letra repetida (autor: lucio)
+
+> El usuario re-tipea una letra ya intentada: no pierde vida y la app informa.
+
+- **19:44 — [RED]** Acceptance Test "letra repetida": con "GATO", adivinar "E"
+  dos veces debe mantener las vidas en 5 y mostrar "Ya intentaste la letra E".
+  Falla en el step de vidas: esperaba 5, recibió 4, porque la letra repetida
+  penaliza doble (bug real). Los 5 ATs anteriores siguen en verde. Rojo honesto
+  confirmado antes de tocar código de producción. (`8fad261`)
+- **19:45 — [RED]** Unit Test: adivinar una letra ya intentada no descuenta
+  vidas adicionales. Falla: esperaba 5, recibió 4 (doble penalización). Los 9
+  unit tests anteriores siguen en verde. (`f482958`)
+- **19:46 — [GREEN]** `adivinar()` ahora detecta si la letra ya está en el
+  conjunto de adivinadas y hace early return sin penalizar. Los 10 unit tests
+  quedan en verde. (`90825cf`)
+- **19:46 — [RED]** Unit Test: adivinar una letra ya intentada devuelve
+  "repetida". Falla: esperaba "repetida", recibió undefined (retorno void).
+  Los 10 unit tests anteriores siguen en verde. (`3c15b09`)
+- **19:47 — [GREEN]** `adivinar()` ahora retorna `string`: "repetida" cuando
+  la letra ya fue intentada. Los 11 unit tests quedan en verde. (`b4f1ef6`)
+- **19:47 — [GREEN]** Acceptance Test "letra repetida" en verde: la interfaz
+  usa el retorno de `adivinar()` para mostrar "Ya intentaste la letra X". Los
+  6 ATs pasan de punta a punta. AT 6 completo. (`3f17416`)

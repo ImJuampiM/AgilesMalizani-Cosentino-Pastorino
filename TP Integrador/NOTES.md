@@ -35,3 +35,10 @@ UTs:
 
 - la partida esta perdida cuando se agotan las vidas (`estaPerdida()` devuelve true tras 6 fallos)
 - palabraRevelada muestra la palabra completa con espacios (`palabraRevelada()` devuelve "G A T O")
+
+## AT 6 — Letra repetida
+
+UTs:
+
+- adivinar una letra ya intentada no descuenta vidas adicionales
+- adivinar una letra ya intentada devuelve "repetida" para que la UI pueda informar
