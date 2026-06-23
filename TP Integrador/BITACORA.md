@@ -88,3 +88,6 @@ mayúsculas). Todavía no distingue acierto de fallo ni descuenta vidas.
   esperaba 5, recibió 6, porque el juego aún no descuenta vidas. AT 1 y AT 2
   siguen en verde. Rojo honesto confirmado antes de tocar el código de
   producción.
+- **19:00 — [RED]** Unit Test: fallar una letra descuenta una vida (adivinar una
+  letra ausente baja las vidas de 6 a 5). Falla: esperaba 5, recibió 6, porque
+  las vidas están fijas en 6. Los otros 5 unit tests siguen en verde.

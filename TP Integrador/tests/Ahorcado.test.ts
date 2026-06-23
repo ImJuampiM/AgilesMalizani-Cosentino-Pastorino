@@ -28,3 +28,9 @@ it("acertar una letra no descuenta vidas", () => {
   juego.adivinar("A");
   expect(juego.vidasRestantes()).toBe(6);
 });
+
+it("fallar una letra descuenta una vida", () => {
+  const juego = new Ahorcado("GATO");
+  juego.adivinar("E");
+  expect(juego.vidasRestantes()).toBe(5);
+});
