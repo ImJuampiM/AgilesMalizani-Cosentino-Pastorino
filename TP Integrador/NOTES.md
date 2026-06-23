@@ -42,3 +42,10 @@ UTs:
 
 - adivinar una letra ya intentada no descuenta vidas adicionales
 - adivinar una letra ya intentada devuelve "repetida" para que la UI pueda informar
+
+## AT 7 — Entrada inválida
+
+UTs:
+
+- adivinar un caracter que no es una letra no descuenta vidas (`adivinar()` devuelve "invalida" sin penalizar)
+- adivinar con la partida ya perdida no se procesa (`adivinar()` devuelve "terminada"; la partida no puede pasar a ganada después de perdida)

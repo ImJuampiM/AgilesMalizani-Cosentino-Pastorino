@@ -175,3 +175,48 @@ mayúsculas). Todavía no distingue acierto de fallo ni descuenta vidas.
 - **19:47 — [GREEN]** Acceptance Test "letra repetida" en verde: la interfaz
   usa el retorno de `adivinar()` para mostrar "Ya intentaste la letra X". Los
   6 ATs pasan de punta a punta. AT 6 completo. (`3f17416`)
+
+---
+
+## Sesión 4 — 23/06/2026 (autor: lucio / Cosentino)
+
+### AT 7 — Entrada inválida
+
+> El usuario tipea algo que no es una sola letra, o intenta jugar con la
+> partida ya terminada: en ambos casos la jugada no se procesa.
+
+- **20:00 — [RED]** Acceptance Test "entrada inválida" (escenario 1): al
+  adivinar "3" en "GATO", las vidas deben quedar en 6 y verse el mensaje
+  "Entrada no válida". Falla en el step de vidas: esperaba 6, recibió 5,
+  porque el "3" se trata como una letra ausente y penaliza. Los 6 ATs
+  anteriores siguen en verde. Rojo honesto confirmado antes de tocar código.
+  (`3a8a68b`)
+- **20:00 — [RED]** Unit Test: adivinar un caracter que no es una letra no
+  descuenta vidas. Falla: esperaba 6, recibió 5. Los 11 unit tests anteriores
+  siguen en verde. (`9fc9658`)
+- **20:00 — [GREEN]** `adivinar()` ahora valida con una expresión regular que
+  la entrada sea exactamente una letra A-Z; si no, devuelve "invalida" sin
+  penalizar. Los 12 unit tests quedan en verde. (`6d8ac0a`)
+- **20:01 — [GREEN]** Acceptance Test "entrada inválida" (escenario 1) en
+  verde: la interfaz muestra "Entrada no válida" cuando `adivinar()` devuelve
+  "invalida". Los 7 ATs pasan de punta a punta. (`eb45ac1`)
+- **20:02 — [RED]** Acceptance Test "entrada inválida" (escenario 2): tras
+  perder con 6 fallos, seguir adivinando las letras restantes (G, A, T, O) no
+  debe cambiar el resultado; debe seguir viéndose "PERDISTE". Falla: el
+  mensaje pasaba a "GANASTE" porque `estaGanada()` se calculaba sin tener en
+  cuenta que la partida ya estaba perdida (bug real). Los 7 ATs anteriores
+  siguen en verde. (`6f21709`)
+- **20:02 — [RED]** Unit Test: adivinar con la partida ya perdida no se
+  procesa (no puede pasar a ganada después). Falla: `estaGanada()` devolvía
+  true. Los 12 unit tests anteriores siguen en verde. (`c4c9179`)
+- **20:02 — [GREEN]** `adivinar()` ahora hace early return con "terminada"
+  cuando la partida ya está ganada o perdida, sin procesar la jugada. Los 13
+  unit tests quedan en verde. (`c0b7f1c`)
+- **20:03 — [GREEN]** Acceptance Test "entrada inválida" (escenario 2) en
+  verde: no hizo falta tocar la interfaz (ya usa el retorno de `adivinar()`).
+  Los 8 ATs pasan de punta a punta. Verificado a mano en el navegador. AT 7
+  completo.
+
+**Estado al cierre de la sesión 4:** los 7 ATs de la escalera de la guía
+completos y en verde (13 unit tests, 8 acceptance tests). El juego del
+Ahorcado está funcionalmente completo según la consigna base.
