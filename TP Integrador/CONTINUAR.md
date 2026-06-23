@@ -45,10 +45,12 @@ Resumen del modelo mental:
 - **AT 1 y AT 2:** todos los tests los hizo **Cosentino** (`lucio`).
 - **AT 3 y AT 4:** todos los tests los hizo **Malizani** (`JuanPabloMalizani`).
 - **AT 5 y AT 6:** los hizo **Pastorino** (`Juan Jose Pastorino`).
+- **AT 7:** lo hizo **Cosentino** (`lucio`).
 
-Los tres integrantes tienen participación en el TP. De aquí en adelante
-conviene seguir rotando **test por test**. **El próximo AT (el 7) debería
-arrancarlo Cosentino o Malizani** para mantener la rotación.
+Los tres integrantes tienen participación en el TP. La escalera de 7 ATs de
+la guía está **completa**. Si el grupo encara el desafío de Aprobación
+Directa (§10), conviene que **arranquen Malizani o Pastorino** la primera
+feature nueva, para reequilibrar la rotación (Cosentino hizo AT 1, 2 y 7).
 
 Que cada integrante fije **una sola** identidad de git consistente antes de
 commitear para no ensuciar `git shortlog -sne`.
@@ -88,7 +90,7 @@ TP Integrador/
       main.ts                 ← mountApp(root, juego): pinta word/lives/input/mensaje
       index.ts                ← arranque: lee ?word= de la URL (default "GATO")
   tests/
-    Ahorcado.test.ts          ← 11 unit tests, todos en verde (ver abajo)
+    Ahorcado.test.ts          ← 13 unit tests, todos en verde (ver abajo)
   features/
     iniciar-partida.feature
     acertar-letra.feature
@@ -96,6 +98,7 @@ TP Integrador/
     ganar.feature
     perder-partida.feature
     letra-repetida.feature
+    entrada-invalida.feature  ← 2 escenarios (no-letra / partida terminada)
     steps/
       ahorcado.steps.ts       ← 5 steps reutilizables (Given/When/Then)
 ```
@@ -128,7 +131,13 @@ export class Ahorcado {
   }
 
   adivinar(letra: string): string {
+    if (this.estaGanada() || this.estaPerdida()) {
+      return "terminada";
+    }
     const normalizada = letra.toUpperCase();
+    if (!/^[A-Z]$/.test(normalizada)) {
+      return "invalida";
+    }
     if (this.adivinadas.has(normalizada)) {
       return "repetida";
     }
@@ -152,17 +161,22 @@ export class Ahorcado {
 }
 ```
 
-**Notas para la próxima sesión:**
+**Notas sobre el estado del dominio:**
 
-- `adivinar()` ahora retorna `string`: `"repetida"` si la letra ya fue
-  intentada (early return, sin penalizar), `""` en caso normal.
+- `adivinar()` retorna un `string` que la UI usa para decidir qué mensaje
+  mostrar. Posibles retornos, en orden de chequeo:
+  - `"terminada"`: la partida ya está ganada o perdida → no procesa la jugada.
+  - `"invalida"`: la entrada no es exactamente una letra A-Z (número,
+    símbolo, vacío, más de un carácter) → no procesa ni penaliza.
+  - `"repetida"`: la letra ya fue intentada → no penaliza.
+  - `""`: jugada normal (acierto o fallo nuevo).
 - `estaPerdida()` devuelve `true` cuando `vidasRestantes() <= 0`.
 - `palabraRevelada()` devuelve la palabra completa con espacios entre letras.
-- Todavía **no hay validación de entrada** (no se verifica que la letra sea
-  una sola letra, ni que no sea un número o símbolo) — eso lo va a forzar el
-  **AT 7 (Entrada inválida)**.
-- Todavía **no se impide jugar con la partida terminada** — eso también entra
-  en el AT 7.
+- **La escalera de 7 ATs de la guía está completa.** El dominio cubre:
+  enmascarar, revelar, contar fallos, ganar, perder, letra repetida,
+  validación de entrada y bloqueo de jugadas con la partida terminada.
+- Lo que sigue (si encaran Aprobación Directa) son **features nuevas** a
+  elección — ver §10.
 
 ## 5. Código de UI completo, tal como quedó
 
@@ -172,7 +186,7 @@ export class Ahorcado {
 import { Ahorcado } from "../domain/Ahorcado";
 
 export function mountApp(root: HTMLElement, juego: Ahorcado): void {
-  let mensajeRepetida = "";
+  let mensajeAviso = "";
 
   function render(): void {
     let mensaje = "";
@@ -180,8 +194,8 @@ export function mountApp(root: HTMLElement, juego: Ahorcado): void {
       mensaje = `<div data-testid="message">GANASTE</div>`;
     } else if (juego.estaPerdida()) {
       mensaje = `<div data-testid="message">PERDISTE</div>`;
-    } else if (mensajeRepetida) {
-      mensaje = `<div data-testid="message">${mensajeRepetida}</div>`;
+    } else if (mensajeAviso) {
+      mensaje = `<div data-testid="message">${mensajeAviso}</div>`;
     }
 
     root.innerHTML = `
@@ -195,7 +209,13 @@ export function mountApp(root: HTMLElement, juego: Ahorcado): void {
       if (evento.key === "Enter") {
         const valor = input.value.toUpperCase();
         const resultado = juego.adivinar(input.value);
-        mensajeRepetida = resultado === "repetida" ? `Ya intentaste la letra ${valor}` : "";
+        if (resultado === "repetida") {
+          mensajeAviso = `Ya intentaste la letra ${valor}`;
+        } else if (resultado === "invalida") {
+          mensajeAviso = "Entrada no válida";
+        } else {
+          mensajeAviso = "";
+        }
         render();
       }
     });
@@ -220,13 +240,14 @@ if (root) {
 }
 ```
 
-La UI ahora maneja tres mensajes posibles: "GANASTE", "PERDISTE" y "Ya
-intentaste la letra X". Al ganar o perder muestra la palabra revelada. La
-lógica de negocio sigue en el dominio.
+La UI maneja los mensajes posibles: "GANASTE", "PERDISTE", "Ya intentaste la
+letra X" y "Entrada no válida". Al ganar o perder muestra la palabra
+revelada. Toda decisión de negocio sigue en el dominio: la UI solo traduce
+el `string` que devuelve `adivinar()` en un mensaje en pantalla.
 
 ## 6. Tests existentes (todos en verde)
 
-`tests/Ahorcado.test.ts` (Vitest, **11 tests**):
+`tests/Ahorcado.test.ts` (Vitest, **13 tests**):
 
 1. una partida nueva muestra la palabra enmascarada con guiones
 2. una partida nueva empieza con 6 vidas
@@ -239,8 +260,11 @@ lógica de negocio sigue en el dominio.
 9. palabraRevelada muestra la palabra completa con espacios
 10. adivinar una letra ya intentada no descuenta vidas adicionales
 11. adivinar una letra ya intentada devuelve "repetida"
+12. adivinar un caracter que no es una letra no descuenta vidas
+13. adivinar con la partida ya perdida no se procesa (no puede ganarse después)
 
-AT en `features/` (**6 features**, todos pasan con `npm run at`):
+AT en `features/` (**7 features**, todos pasan con `npm run at` — 8 escenarios
+en total, porque `entrada-invalida` tiene 2):
 
 - `iniciar-partida.feature`: "GATO" → ve `_ _ _ _` y 6 vidas.
 - `acertar-letra.feature`: adivina "A" → ve `_ A _ _` y sigue en 6 vidas.
@@ -248,6 +272,9 @@ AT en `features/` (**6 features**, todos pasan con `npm run at`):
 - `ganar.feature`: adivina G-A-T-O → ve el mensaje "GANASTE".
 - `perder-partida.feature`: 6 fallos (B-C-D-F-H-J) → ve "PERDISTE" y "G A T O".
 - `letra-repetida.feature`: adivina "E" dos veces → vidas en 5 y "Ya intentaste la letra E".
+- `entrada-invalida.feature`: (1) adivina "3" → sigue en 6 vidas y "Entrada no
+  válida"; (2) tras perder, completar las letras restantes sigue mostrando
+  "PERDISTE" (no "GANASTE").
 
 `features/steps/ahorcado.steps.ts` define y reutiliza **5 steps**:
 
@@ -302,6 +329,16 @@ RED:   UT adivinar letra ya intentada devuelve repetida
 GREEN: adivinar devuelve repetida cuando la letra ya fue intentada
 GREEN: AT letra repetida - la UI informa Ya intentaste la letra X
 docs:  bitacora y lista de UTs del AT 6
+Realizado: AT 5 - 6
+─────────────────────  AT 7 — autor: Cosentino (lucio)  ────────────────────
+RED:   AT entrada invalida - tipear un caracter que no es letra no debe procesarse
+RED:   UT adivinar caracter no letra no descuenta vidas
+GREEN: adivinar rechaza caracteres que no son una letra
+GREEN: AT entrada invalida - UI muestra Entrada no valida
+RED:   AT entrada invalida - jugar con la partida ya terminada no debe procesarse
+RED:   UT adivinar con partida perdida no debe ganarse despues
+GREEN: adivinar no procesa jugadas cuando la partida ya termino
+docs:  bitacora y lista de UTs del AT 7 entrada invalida
 ```
 
 Para verificar en cualquier momento:
@@ -335,7 +372,7 @@ git shortlog -sne                                # commits por autor (rotación)
 - **Aviso de versión de Node:** Vite 8 pide Node ≥20.19; con Node 20.13 sale
   un warning pero funcionó igual.
 
-## 9. Qué falta (escalera de ATs, orden sugerido — no obligatorio)
+## 9. Estado de la escalera de ATs (la guía base está COMPLETA)
 
 | # | AT | Qué ve/hace el usuario | Estado |
 |---|---|---|---|
@@ -345,71 +382,64 @@ git shortlog -sne                                # commits por autor (rotación)
 | 4 | Ganar | completa la palabra → "GANASTE" | ✅ verde |
 | 5 | Perder | 6 fallos → "PERDISTE" + palabra revelada | ✅ verde |
 | 6 | Letra repetida | re-tipear letra ya intentada → no penaliza, informa | ✅ verde |
-| 7 | **Entrada inválida** (siguiente) | tipea no-letra, o juega con partida terminada | ⬜ pendiente |
+| 7 | Entrada inválida | tipea no-letra → "Entrada no válida"; jugar con partida terminada no procesa | ✅ verde |
 
-## 10. Cómo seguir paso a paso — AT 7 (Entrada inválida)
+**Los 7 ATs de la guía están completos y en verde.** El juego del Ahorcado
+está funcionalmente terminado según la consigna base. Lo que sigue (§10) es
+**opcional**: el desafío de Aprobación Directa.
 
-> **Rotación:** el AT 7 debería arrancarlo **Cosentino o Malizani** (los AT
-> 5-6 los hizo Pastorino).
+## 10. Cómo seguir — Desafío de Aprobación Directa (opcional)
 
-El AT 7 cubre dos comportamientos:
-1. **Entrada no válida:** el jugador tipea algo que no es una sola letra
-   (un número, un símbolo, una cadena vacía, o más de un carácter). La app
-   no debe procesar la jugada y debe informar al usuario.
-2. **Jugar con la partida terminada:** el jugador tipea una letra cuando
-   la partida ya está ganada o perdida. La app no debe procesar la jugada.
+La §9 de `GUIA-ATDD-IA-Ahorcado.md` propone, para Aprobación Directa, elegir
+**al menos 4 features nuevas** y construirlas con el mismo proceso (AT en
+rojo honesto → UTs sobre el dominio → verde → mirar la app), apuntando a
+~100% de cobertura en `src/domain/`. Ideas de la guía (con dónde vive la
+lógica testeable):
 
-Se puede dividir en uno o dos features; decisión del grupo.
+| Feature | Lógica de dominio a cubrir con UTs |
+|---|---|
+| Dibujo progresivo del ahorcado | qué partes del muñeco se muestran según los errores (0→6) |
+| Palabra al azar de una lista | elegir palabra; **seam** para inyectar el azar y testear determinista |
+| Soporte de acentos y ñ | normalizar: `á` == `a`, tratar la `ñ` (caso borde de "100% ≠ 0 bugs") |
+| Teclado en pantalla | marcar letras ya usadas (acertadas/falladas) como no disponibles |
+| Niveles de dificultad | cantidad de vidas y/o longitud de palabra según el nivel |
+| Pista / categoría | asociar una categoría o pista a cada palabra |
+| Marcador de la sesión | contar partidas ganadas/perdidas en memoria |
+| Jugar de nuevo | reiniciar el estado sin recargar la página |
+| Dos jugadores | un jugador ingresa la palabra en una pantalla previa |
 
-### Paso a paso sugerido:
+La guía recomienda especialmente **Palabra al azar** (te obliga a diseñar un
+seam para el azar, la lección de testabilidad más transferible) y
+**Acentos/ñ** (materializa que 100% de cobertura no es 0 bugs).
 
-1. **Escribir el feature** `features/entrada-invalida.feature`. Borrador:
-   ```gherkin
-   # language: es
-   Característica: Entrada inválida
+### El ciclo es idéntico al de los ATs ya hechos:
 
-     Escenario: El jugador tipea algo que no es una letra
-       Dado una partida con la palabra "GATO"
-       Cuando el jugador adivina la letra "3"
-       Entonces se ven 6 vidas
-       Y se ve el mensaje "Entrada no válida"
+1. **Decidir la feature y quién la arranca** (rotar: ahora deberían arrancar
+   Malizani o Pastorino — ver §1.bis). Fijar su identidad de git.
+2. **Escribir el AT** (`features/<nombre>.feature`) → `npm run at` → ver el
+   **rojo honesto** → commit `RED:` antes de tocar producción.
+3. **Enumerar los UTs** del dominio en `NOTES.md` antes de codear.
+4. **Loop interno**, un UT a la vez: rojo → mínimo código → verde →
+   ¿refactor? → commits `RED:`/`GREEN:` separados.
+5. **Cablear la UI** lo mínimo. Recordar: la lógica nueva va en `Ahorcado`
+   (o un nuevo módulo de dominio), **nunca** en `main.ts`.
+6. `npm run at` verde → **mirar la app** (`npm run dev`) → commit `GREEN:`
+   del AT → actualizar `NOTES.md` y `BITACORA.md` → **push** (solo en verde).
 
-     Escenario: El jugador intenta jugar con la partida terminada
-       Dado una partida con la palabra "GATO"
-       Cuando el jugador adivina la letra "B"
-       Y el jugador adivina la letra "C"
-       Y el jugador adivina la letra "D"
-       Y el jugador adivina la letra "F"
-       Y el jugador adivina la letra "H"
-       Y el jugador adivina la letra "J"
-       Y el jugador adivina la letra "A"
-       Entonces se ven 0 vidas
-       Y se ve el mensaje "PERDISTE"
-   ```
-   (Elegir los escenarios que el grupo considere representativos.)
+### Detalle útil para "Palabra al azar" (la más recomendada):
 
-2. **Correr `npm run at`** → predicción: rojo, porque la app no valida
-   entrada. Commitear el rojo (`RED: AT entrada inválida ...`) **antes**
-   de tocar `Ahorcado.ts`.
+El `?word=` de la URL ya es el seam de la palabra. Para el azar, inyectar la
+fuente de aleatoriedad por constructor (p. ej. `new Ahorcado(palabra)` vs un
+selector `elegirPalabra(lista, rng)` donde `rng` es inyectable) para poder
+testear determinista pasando un `rng` falso. No hardcodear `Math.random()`
+dentro del dominio.
 
-3. **Enumerar los UTs** (a `NOTES.md`). Mínimo probable:
-   - adivinar una entrada que no es una letra no la procesa ni penaliza
-   - adivinar con la partida terminada no la procesa
-   - (decisión de diseño) ¿`adivinar()` devuelve un string como "invalida"
-     o "terminada" para que la UI pueda informar?
+### Si NO encaran Aprobación Directa:
 
-4. **Loop interno**, un UT a la vez: test → predecir rojo → correr →
-   confirmar → commit `RED:` → mínimo código en `Ahorcado.ts` → verde →
-   commit `GREEN:` → ¿refactor?
-
-5. **Cablear UI:** en `main.ts`, manejar los nuevos retornos de `adivinar()`
-   o impedir el envío cuando la partida terminó.
-
-6. **Correr `npm run at`**, confirmar verde, **abrir `npm run dev`** y jugar
-   a mano.
-
-7. **Commit `GREEN:` del AT**, actualizar `NOTES.md` y `BITACORA.md`, **push**
-   (solo con el tope en verde).
+El TP base está entregable tal cual. Verificar antes de la defensa:
+`npm run test` (13 verdes), `npm run at` (8 escenarios verdes),
+`git log --oneline` (alternancia RED:/GREEN:) y `git shortlog -sne`
+(rotación entre los 3 integrantes).
 
 ## 11. Reglas a no romper (de la guía, no negociables)
 
