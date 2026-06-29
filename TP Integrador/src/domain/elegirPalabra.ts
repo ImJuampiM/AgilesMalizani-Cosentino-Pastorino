@@ -1,3 +1,3 @@
 export function elegirPalabra(lista: string[], rng: () => number): string {
-  return lista[0];
+  return lista[Math.floor(rng() * lista.length)];
 }
