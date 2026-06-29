@@ -7,6 +7,10 @@ Given("una partida con la palabra {string}", async ({ page }, palabra: string) =
   await page.goto(`/?word=${palabra}`);
 });
 
+Given("una partida al azar con la semilla {int}", async ({ page }, semilla: number) => {
+  await page.goto(`/?seed=${semilla}`);
+});
+
 When("el jugador adivina la letra {string}", async ({ page }, letra: string) => {
   const input = page.getByRole("textbox");
   await input.fill(letra);
