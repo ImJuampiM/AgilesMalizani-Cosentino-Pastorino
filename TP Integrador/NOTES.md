@@ -49,3 +49,13 @@ UTs:
 
 - adivinar un caracter que no es una letra no descuenta vidas (`adivinar()` devuelve "invalida" sin penalizar)
 - adivinar con la partida ya perdida no se procesa (`adivinar()` devuelve "terminada"; la partida no puede pasar a ganada después de perdida)
+
+## Aprobación Directa — Feature 1: Palabra al azar
+
+> Seam del azar: el dominio no conoce `Math.random`. `elegirPalabra(lista, rng)`
+> recibe el `rng` por parámetro para poder testear determinista con un rng falso.
+
+UTs (`elegirPalabra(lista: string[], rng: () => number)`):
+
+- elegirPalabra con un rng que devuelve 0 elige la primera palabra de la lista
+- elegirPalabra con un rng cercano a 1 elige la última palabra de la lista
