@@ -30,3 +30,13 @@ it("ganar una partida y empezar otra suma una ganada al marcador", () => {
   expect(sesion.ganadas()).toBe(1);
   expect(sesion.perdidas()).toBe(0);
 });
+
+it("perder una partida y empezar otra suma una perdida al marcador", () => {
+  const sesion = new Sesion(["SOL"], () => 0);
+  for (const letra of ["B", "C", "D", "F", "G", "H"]) {
+    sesion.partidaActual().adivinar(letra);
+  }
+  sesion.nuevaPartida();
+  expect(sesion.perdidas()).toBe(1);
+  expect(sesion.ganadas()).toBe(0);
+});
