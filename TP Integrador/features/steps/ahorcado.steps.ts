@@ -28,6 +28,10 @@ When("el jugador presiona {string}", async ({ page }, boton: string) => {
   await page.getByRole("button", { name: boton }).click();
 });
 
+When("el jugador hace click en la tecla {string}", async ({ page }, letra: string) => {
+  await page.getByRole("button", { name: letra, exact: true }).click();
+});
+
 Then("se ve la palabra {string}", async ({ page }, esperada: string) => {
   await expect(page.getByTestId("word")).toHaveText(esperada);
 });
