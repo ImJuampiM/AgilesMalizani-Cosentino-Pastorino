@@ -220,3 +220,51 @@ mayúsculas). Todavía no distingue acierto de fallo ni descuenta vidas.
 **Estado al cierre de la sesión 4:** los 7 ATs de la escalera de la guía
 completos y en verde (13 unit tests, 8 acceptance tests). El juego del
 Ahorcado está funcionalmente completo según la consigna base.
+
+---
+
+## Sesión 5 — 29/06/2026 (autor: JuanPabloMalizani / Malizani)
+
+> Arranca el desafío de Aprobación Directa (§10). Antes de codear se destrabó
+> un blocker de entorno de la máquina: Node 21.7.1 (no-LTS, EOL) rompía la
+> toolchain de rolldown (`util.styleText` con arrays no soportado). Se instaló
+> Node 24.18.0 LTS (`winget install OpenJS.NodeJS.LTS`); con eso `npm run test`
+> (13) y `npm run at` (8) volvieron a verde. No es trabajo del TP, no tiene
+> commit.
+
+### Aprobación Directa — Feature 1: Palabra al azar
+
+> El usuario empieza una partida sin elegir palabra y el juego toma una de una
+> lista. Seam del azar: el dominio no conoce `Math.random`; `elegirPalabra`
+> recibe el `rng` por parámetro y la UI lo inyecta (con `?seed=` determinista
+> para el AT).
+
+- **20:50 — [RED]** Acceptance Test "palabra al azar": al iniciar con
+  `?seed=0` (sin `?word=`), debe verse la palabra enmascarada de la primera
+  palabra de la lista, "_ _ _ _ _" (PERRO, 5 letras), y 6 vidas. Falla en el
+  step de la palabra: la app cae al default "GATO" y muestra "_ _ _ _" (4
+  guiones). Los 8 ATs anteriores siguen en verde. Rojo honesto confirmado
+  antes de tocar producción. (`5b5f9fc`)
+- **20:56 — [RED]** Unit Test: `elegirPalabra` con un rng que devuelve 0 elige
+  la primera palabra de la lista. Falla al importar: el módulo
+  `src/domain/elegirPalabra` no existe. Los 13 unit tests anteriores siguen en
+  verde. (`6c71c2b`)
+- **20:57 — [GREEN]** `elegirPalabra(lista, rng)` devuelve `lista[0]` (mínimo
+  código). Los 14 unit tests quedan en verde. (`288b8e3`)
+- **20:58 — [RED]** Unit Test: `elegirPalabra` con un rng cercano a 1 (0.99)
+  elige la última palabra de la lista. Falla: devolvía "PERRO", esperaba
+  "ELEFANTE". Fuerza generalizar la fórmula. Los 14 unit tests anteriores
+  siguen en verde. (`69312bc`)
+- **20:59 — [GREEN]** `elegirPalabra` ahora indexa con
+  `lista[Math.floor(rng() * lista.length)]`. Los 15 unit tests quedan en
+  verde. (`310f2be`)
+- **21:00 — [GREEN]** Acceptance Test "palabra al azar" en verde: el
+  composition root (`index.ts`) usa `?word=` si viene (back-compat de los 8 AT
+  previos) y si no elige de la lista `PALABRAS` con `elegirPalabra`; `?seed=`
+  arma un rng determinista para el AT, sin seed usa `Math.random`. Los 9 ATs
+  pasan de punta a punta. Verificado: dev server sirve 200 y Vite transpila el
+  módulo nuevo. AT palabra al azar completo. (`da4a30a`)
+
+**Estado al cierre de la sesión 5:** 15 unit tests y 9 acceptance tests en
+verde. Primera de las features de Aprobación Directa (Palabra al azar)
+completa. Faltan al menos 3 features más para el desafío (§10).
