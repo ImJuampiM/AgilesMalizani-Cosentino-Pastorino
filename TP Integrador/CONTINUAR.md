@@ -7,6 +7,71 @@ donde quedó, sin tener que re-explicar nada.
 > Para el detalle paso a paso con fechas y horas de TODO lo realizado, ver
 > `BITACORA.md` (en esta misma carpeta). Este archivo es el resumen + la guía
 > de lo que falta; la bitácora es el registro cronológico.
+>
+> **NOTA:** las secciones numeradas de más abajo tienen algunos números viejos
+> (21 UT, F4 pendiente, etc.). El estado REAL y al día está en este bloque de
+> arriba (👇 PROMPT DE HANDOFF) y en `BITACORA.md`. Ante una duda, mandan esos.
+
+---
+
+## 🟢 PROMPT DE HANDOFF — pegá esto para retomar (estado al HEAD 4498997)
+
+```
+Continuamos el TP del Ahorcado en TypeScript con ATDD de doble loop
+(Cucumber/Playwright para la UI, Vitest para el dominio), carpeta
+"TP Integrador/" del repo.
+
+ESTADO ACTUAL (todo verde y pusheado a origin/main, git limpio):
+
+• Escalera base de 7 ATs de la guía: COMPLETA.
+• Aprobación Directa: 9 features (F1–F9), catálogo de la guía agotado:
+  F1 Palabra al azar · F2 Dibujo progresivo · F3 Teclado en pantalla ·
+  F4 Acentos y Ñ · F5 Jugar de nuevo (Sesion) · F6 Marcador de sesión ·
+  F7 Niveles de dificultad (?nivel=) · F8 Pista (?pista=) ·
+  F9 Dos jugadores (?modo=duo, validarPalabra.ts + pantalla de setup).
+• UI: teclado clickeable, muñeco en SVG, estilos (tema oscuro) y PANEL DE
+  CONTROLES (botones de dificultad, "Nueva palabra", "2 jugadores"). Los
+  seams de URL se conservan porque los usan los ATs.
+• 42 unit tests (100% cobertura en src/) y 25 acceptance tests, todos en verde.
+• CI/CD: ci.yml = build → typecheck → ESLint (QUALITY GATE, --max-warnings 0,
+  corta el build) → unit+coverage → AT → deploy a Pages. App online:
+  https://imjuampim.github.io/AgilesMalizani-Cosentino-Pastorino/
+
+CORRECCIÓN DEL PROFE (1ª versión):
+• Lo que BLOQUEABA (análisis estático con quality gate) YA ESTÁ RESUELTO con
+  ESLint (el tsc quedó como validación de tipos, complementario). Verificar
+  el run en Actions en verde.
+• PENDIENTE no bloqueante: rotación despareja (Lucio ~2/3 de los commits).
+
+ANTES DE ARRANCAR:
+1. git pull.  2. Node 22 LTS o superior.
+3. Leé BITACORA.md (registro cronológico, AL DÍA).
+4. Verificá verde: cd "TP Integrador" && npm install && npm run test (42) &&
+   npm run at (25) && npm run lint (gate, exit 0) && npm run coverage (100%).
+
+TU TAREA (OBLIGATORIA — NO se cierra el TP todavía):
+• Tenés que AGREGAR AL MENOS UNA feature/mejora nueva más, con el proceso
+  completo de doble loop (AT rojo → UTs → verde → mirar la app → docs → push).
+  No vale "dar por cerrado" ni sólo refactorizar: hay que sumar algo nuevo.
+• Elegí UNA y arrancala (o proponé otra equivalente):
+  - Pistas/categorías por palabra en el modo al azar (map palabra→pista; hoy la
+    pista sólo entra por ?pista=).
+  - Racha de victorias consecutivas en el Marcador.
+  - Temporizador por partida (seam de reloj inyectable, como el de azar).
+  - Historial persistente del marcador (localStorage detrás de un seam).
+  - Definición/pista revelable con un botón "Ver pista".
+• ROTACIÓN: como Lucio está sobrecargado, ESTE trabajo lo arranca y commitea
+  Malizani o Pastorino (fijá tu identidad de git antes de commitear).
+
+REGLAS NO NEGOCIABLES:
+• No test, no code.  • Commit RED apenas falla el test, ANTES de tocar
+  producción (el rojo es ancestro del verde); luego GREEN.  • El nombre del
+  test lo decide el grupo.  • Push solo con el tope en verde.  • Rotación real
+  de autor.  • Registrar cada paso en BITACORA.md.  • NO co-autoría de la IA.
+
+Decime qué entendiste y CON QUÉ feature nueva vas a arrancar (no se cierra
+el TP sin sumar al menos una más).
+```
 
 ---
 
