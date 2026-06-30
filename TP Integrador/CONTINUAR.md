@@ -549,9 +549,14 @@ dominio con sus dependencias inyectadas, y la UI/composition root solo cablea.
 ### Integración continua (CI) — ✅ funcionando
 
 - Workflow: `.github/workflows/ci.yml`. Corre en cada **push y PR a `main`**.
-- Un solo job: **`TP Integrador - Ahorcado (UT + AT)`** (Node 22, ubuntu):
+- Un solo job: **`TP Integrador - Ahorcado (UT + AT)`** (Node 22, ubuntu), con
+  el **pipeline completo** que pedía la corrección del profe:
   `npm install` → `npx playwright install --with-deps chromium` →
-  `npx vitest run` (21 UT) → `npm run at` (11 AT).
+  **build** (`npm run build`) → **análisis estático** (`npm run typecheck`,
+  `tsc --noEmit`) → **tests + coverage** (`npm run coverage`,
+  `vitest run --coverage` — 21 UT, 100% de cobertura en `src/`) →
+  **AT** (`npm run at`, 11 escenarios Playwright). Sin servicios externos
+  (no se usó SonarCloud; el análisis es `tsc` + el coverage de Vitest).
 - Se usa `npm install` (no `npm ci`) a propósito: el lockfile fue generado en
   macOS y, por el bug cross-platform de las deps opcionales nativas de rolldown
   (ver §8), `npm ci` puede no traer el binding de Linux y romper Vite en CI.

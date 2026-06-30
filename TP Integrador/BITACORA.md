@@ -363,6 +363,13 @@ Faltan al menos 2 features más para el desafío (§10).
   (`919dc2b`)
 - **[CI]** Se quitó el job del `string-calculator`; el workflow quedó con un
   solo job (el del TP). Verificado en verde. (`7dbbeb3`)
+- **[CI]** Pipeline completo del TP (atiende la corrección del profe: build +
+  test + cobertura + análisis): se agregaron los steps **build**
+  (`npm run build`), **typecheck** (`tsc --noEmit`, análisis estático) y
+  **coverage** (`vitest run --coverage`, 100% en `src/`), además de los AT.
+  Sin SonarCloud (análisis con `tsc` + coverage de Vitest, sin cuentas
+  externas). Verificado en GitHub Actions: run en verde con todos los steps.
+  (`9d39333`)
 - **[DEPLOY]** `vite.config.ts` con `base` al subpath del repo solo en build
   (en dev queda en `/` para no romper los AT), script `build`, y workflow
   `.github/workflows/deploy.yml` (build → artifact → GitHub Pages). Build
