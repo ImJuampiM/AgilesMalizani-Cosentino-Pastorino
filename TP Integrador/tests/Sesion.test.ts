@@ -20,3 +20,13 @@ it("una sesion nueva tiene el marcador en cero", () => {
   expect(sesion.ganadas()).toBe(0);
   expect(sesion.perdidas()).toBe(0);
 });
+
+it("ganar una partida y empezar otra suma una ganada al marcador", () => {
+  const sesion = new Sesion(["SOL"], () => 0);
+  sesion.partidaActual().adivinar("S");
+  sesion.partidaActual().adivinar("O");
+  sesion.partidaActual().adivinar("L");
+  sesion.nuevaPartida();
+  expect(sesion.ganadas()).toBe(1);
+  expect(sesion.perdidas()).toBe(0);
+});
