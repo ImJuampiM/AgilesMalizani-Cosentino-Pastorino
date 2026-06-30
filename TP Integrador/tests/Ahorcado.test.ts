@@ -101,3 +101,10 @@ it("partesVisibles devuelve un array vacio con 0 errores", () => {
   const juego = new Ahorcado("GATO");
   expect(juego.partesVisibles()).toEqual([]);
 });
+
+it("partesVisibles devuelve cabeza con 1 error", () => {
+  const juego = new Ahorcado("GATO");
+  juego.adivinar("B");
+  expect(juego.partesVisibles()).toEqual(["cabeza"]);
+});
+
