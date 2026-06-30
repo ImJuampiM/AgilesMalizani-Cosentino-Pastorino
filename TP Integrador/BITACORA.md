@@ -310,3 +310,49 @@ completa. Faltan al menos 3 features más para el desafío (§10).
 verde. Segunda feature de Aprobación Directa (Dibujo progresivo) completa.
 Faltan al menos 2 features más para el desafío (§10).
 
+---
+
+## Sesión 7 — 29/06/2026 (autor: lucio / Cosentino)
+
+> Tercera feature de Aprobación Directa. Arranca Cosentino para reequilibrar la
+> rotación (Cosentino pasa a AT 1, 2, 7 y F3). Entorno verificado al inicio:
+> `git pull` al día, Node v25.9.0 (≥22, sin el bug de rolldown), `npm run test`
+> (18) y `npm run at` (10) en verde antes de tocar nada.
+
+### Aprobación Directa — Feature 3: Teclado en pantalla
+
+> El jugador ve qué letras ya intentó (acertadas y falladas) para no repetirlas.
+> El dominio expone `letrasUsadas(): string[]` con las letras intentadas en
+> mayúsculas y en orden de intento (lee del `Set` `adivinadas`). La UI solo
+> renderiza un `<div data-testid="used-keys">` con esas letras unidas por ", ".
+
+- **21:40 — [RED]** Acceptance Test "teclado en pantalla": con "GATO", tras
+  adivinar "A" y "E" se ven las letras usadas "A, E". Se agrega un step nuevo
+  reutilizable ("las letras usadas son ..."). Falla porque
+  `getByTestId('used-keys')` no existe en el DOM (la UI no lo renderiza). Los
+  10 ATs anteriores siguen en verde. Rojo honesto confirmado antes de tocar
+  producción. (`bb6a7ae`)
+- **21:41 — [RED]** Unit Test: una partida nueva no tiene letras usadas
+  (`letrasUsadas()` devuelve `[]`). Falla: `juego.letrasUsadas is not a
+  function`. Los 18 unit tests anteriores siguen en verde. (`dbb8e44`)
+- **21:42 — [GREEN]** `letrasUsadas()` devuelve `[]` (mínimo código). Los 19
+  unit tests quedan en verde. (`8ed79bf`)
+- **21:43 — [RED]** Unit Test: adivinar una letra la agrega a las letras
+  usadas. Falla: esperaba `["A"]`, recibió `[]`. Fuerza generalizar. Los 19
+  unit tests anteriores siguen en verde. (`a101343`)
+- **21:43 — [GREEN]** `letrasUsadas()` devuelve `[...this.adivinadas]` (orden
+  de inserción). Los 20 unit tests quedan en verde. (`462b083`)
+- **21:43 — [TEST/DOCS]** Se documenta que las letras usadas incluyen aciertos
+  y fallos en orden de intento (adivinar "A" y "E" → `["A", "E"]`). Nota: este
+  test ya estaba verde al escribirlo (el `Set` se llena tanto en aciertos como
+  en fallos). (`193c4dc`)
+- **21:44 — [GREEN]** Acceptance Test "teclado en pantalla" en verde: la
+  interfaz renderiza `<div data-testid="used-keys">` con
+  `juego.letrasUsadas().join(", ")`. Los 11 ATs pasan de punta a punta.
+  Verificado en navegador real (Chromium): vacío al iniciar, "A, E" tras
+  adivinar A y E. AT teclado en pantalla completo. (`e322426`)
+
+**Estado al cierre de la sesión 7:** 21 unit tests y 11 acceptance tests en
+verde. Tercera feature de Aprobación Directa (Teclado en pantalla) completa.
+Falta al menos 1 feature más para el desafío (§10).
+

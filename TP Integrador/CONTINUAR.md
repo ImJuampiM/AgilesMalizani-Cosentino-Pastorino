@@ -50,13 +50,16 @@ Resumen del modelo mental:
   (`JuanPabloMalizani`).
 - **Aprobación Directa — Feature 2 (Dibujo progresivo del muñeco):** la hizo
   **Pastorino** (`Juan Jose Pastorino`).
+- **Aprobación Directa — Feature 3 (Teclado en pantalla):** la hizo
+  **Cosentino** (`lucio`).
 
 Los tres integrantes tienen participación en el TP. La escalera de 7 ATs de
-la guía está **completa** y arrancó el desafío de Aprobación Directa (§10) con
-2 features completadas (F1 Palabra al azar — Malizani, F2 Dibujo progresivo —
-Pastorino). Para la **próxima** feature nueva conviene que arranque
-**Cosentino** para reequilibrar (Cosentino: AT 1, 2 y 7; Malizani: AT 3, 4 y
-F1; Pastorino: AT 5, 6 y F2).
+la guía está **completa** y avanza el desafío de Aprobación Directa (§10) con
+3 features completadas (F1 Palabra al azar — Malizani, F2 Dibujo progresivo —
+Pastorino, F3 Teclado en pantalla — Cosentino). La rotación quedó equilibrada:
+Cosentino AT 1, 2, 7 y F3; Malizani AT 3, 4 y F1; Pastorino AT 5, 6 y F2. Para
+la **próxima** feature nueva (F4) conviene que arranque **Malizani** o
+**Pastorino** para mantener el balance.
 
 Que cada integrante fije **una sola** identidad de git consistente antes de
 commitear para no ensuciar `git shortlog -sne`.
@@ -97,10 +100,10 @@ TP Integrador/
       Ahorcado.ts             ← TODA la lógica de negocio, sin DOM (código abajo)
       elegirPalabra.ts        ← elige palabra de una lista con un rng inyectable (Aprobación Directa F1)
     ui/
-      main.ts                 ← mountApp(root, juego): pinta word/lives/hangman/input/mensaje
+      main.ts                 ← mountApp(root, juego): pinta hangman/word/lives/used-keys/input/mensaje
       index.ts                ← arranque: ?word= o, si no, palabra al azar de la lista (?seed= determinista)
   tests/
-    Ahorcado.test.ts          ← 16 unit tests, todos en verde (ver abajo)
+    Ahorcado.test.ts          ← 19 unit tests, todos en verde (ver abajo)
     elegirPalabra.test.ts     ← 2 unit tests del selector de palabra al azar
   features/
     iniciar-partida.feature
@@ -112,8 +115,9 @@ TP Integrador/
     entrada-invalida.feature  ← 2 escenarios (no-letra / partida terminada)
     palabra-al-azar.feature   ← Aprobación Directa F1: sin ?word= toma una de la lista
     dibujo-progresivo.feature ← Aprobación Directa F2: muñeco progresivo 0→6 errores
+    teclado-en-pantalla.feature ← Aprobación Directa F3: muestra las letras ya usadas
     steps/
-      ahorcado.steps.ts       ← 6 steps reutilizables (Given/When/Then)
+      ahorcado.steps.ts       ← 9 steps reutilizables (Given/When/Then)
 ```
 
 Carpetas generadas, **no** versionadas (`.gitignore`): `node_modules/`,
@@ -170,6 +174,12 @@ export class Ahorcado {
 
   estaPerdida(): boolean {
     return this.vidasRestantes() <= 0;
+  }
+
+  // ... PARTES (F2) y partesVisibles(): slice(0, fallos) ...
+
+  letrasUsadas(): string[] {
+    return [...this.adivinadas];
   }
 }
 ```
@@ -292,7 +302,7 @@ el `string` que devuelve `adivinar()` en un mensaje en pantalla.
 
 ## 6. Tests existentes (todos en verde)
 
-`tests/Ahorcado.test.ts` + `tests/elegirPalabra.test.ts` (Vitest, **18 tests**):
+`tests/Ahorcado.test.ts` + `tests/elegirPalabra.test.ts` (Vitest, **21 tests**):
 
 1. una partida nueva muestra la palabra enmascarada con guiones
 2. una partida nueva empieza con 6 vidas
@@ -312,8 +322,11 @@ el `string` que devuelve `adivinar()` en un mensaje en pantalla.
 16. partesVisibles devuelve un array vacío con 0 errores
 17. partesVisibles devuelve "cabeza" con 1 error
 18. partesVisibles devuelve las 6 partes con 6 errores
+19. una partida nueva no tiene letras usadas (array vacío)
+20. adivinar una letra la agrega a las letras usadas
+21. las letras usadas incluyen aciertos y fallos en orden de intento
 
-AT en `features/` (**9 features**, todos pasan con `npm run at` — 10 escenarios
+AT en `features/` (**10 features**, todos pasan con `npm run at` — 11 escenarios
 en total, porque `entrada-invalida` tiene 2):
 
 - `iniciar-partida.feature`: "GATO" → ve `_ _ _ _` y 6 vidas.
@@ -329,8 +342,10 @@ en total, porque `entrada-invalida` tiene 2):
   (PERRO, primera de la lista) y 6 vidas.
 - `dibujo-progresivo.feature`: al iniciar no hay partes; tras 1 fallo muestra
   "cabeza"; tras 6 fallos muestra las 6 partes del muñeco.
+- `teclado-en-pantalla.feature`: con "GATO", tras adivinar "A" y "E" se ven las
+  letras usadas "A, E".
 
-`features/steps/ahorcado.steps.ts` define y reutiliza **8 steps**:
+`features/steps/ahorcado.steps.ts` define y reutiliza **9 steps**:
 
 - `Dado una partida con la palabra {string}` → `page.goto(/?word=...)`
 - `Dado una partida al azar con la semilla {int}` → `page.goto(/?seed=...)`
@@ -340,6 +355,7 @@ en total, porque `entrada-invalida` tiene 2):
 - `Entonces se ve el mensaje {string}` → `getByTestId('message')`
 - `Entonces el muñeco no tiene partes` → `getByTestId('hangman')` vacío
 - `Entonces el muñeco muestra {string}` → `getByTestId('hangman')` texto
+- `Entonces las letras usadas son {string}` → `getByTestId('used-keys')` texto
 
 ## 7. Historial de commits del TP (de más viejo a más nuevo)
 
@@ -462,8 +478,9 @@ rojo honesto → UTs sobre el dominio → verde → mirar la app), apuntando a
 ~100% de cobertura en `src/domain/`.
 
 > **Avance:** Feature 1 (**Palabra al azar**) ✅ completa (Malizani). Feature 2
-> (**Dibujo progresivo**) ✅ completa (Pastorino). Faltan **al menos 2 features
-> más** para cerrar el desafío.
+> (**Dibujo progresivo**) ✅ completa (Pastorino). Feature 3 (**Teclado en
+> pantalla**) ✅ completa (Cosentino). Falta **al menos 1 feature más** para
+> cerrar el desafío.
 
 Ideas de la guía (con dónde vive la lógica testeable):
 
@@ -471,8 +488,8 @@ Ideas de la guía (con dónde vive la lógica testeable):
 |---|---|
 | ~~Palabra al azar de una lista~~ ✅ hecha | elegir palabra; **seam** para inyectar el azar y testear determinista |
 | ~~Dibujo progresivo del ahorcado~~ ✅ hecha | `partesVisibles()`: las partes del muñeco según los errores (0→6) |
+| ~~Teclado en pantalla~~ ✅ hecha | `letrasUsadas()`: letras ya intentadas (acertadas/falladas) en orden |
 | Soporte de acentos y ñ | normalizar: `á` == `a`, tratar la `ñ` (caso borde de "100% ≠ 0 bugs") |
-| Teclado en pantalla | marcar letras ya usadas (acertadas/falladas) como no disponibles |
 | Niveles de dificultad | cantidad de vidas y/o longitud de palabra según el nivel |
 | Pista / categoría | asociar una categoría o pista a cada palabra |
 | Marcador de la sesión | contar partidas ganadas/perdidas en memoria |
@@ -485,8 +502,9 @@ seam para el azar, la lección de testabilidad más transferible) y
 
 ### El ciclo es idéntico al de los ATs ya hechos:
 
-1. **Decidir la feature y quién la arranca** (rotar: la próxima debería
-   arrancarla **Pastorino** — ver §1.bis). Fijar su identidad de git.
+1. **Decidir la feature y quién la arranca** (rotar: la próxima (F4) debería
+   arrancarla **Malizani** o **Pastorino** — ver §1.bis). Fijar su identidad de
+   git.
 2. **Escribir el AT** (`features/<nombre>.feature`) → `npm run at` → ver el
    **rojo honesto** → commit `RED:` antes de tocar producción.
 3. **Enumerar los UTs** del dominio en `NOTES.md` antes de codear.
@@ -508,7 +526,7 @@ dominio con sus dependencias inyectadas, y la UI/composition root solo cablea.
 
 ### Estado de verificación actual / antes de la defensa:
 
-`npm run test` (**18 verdes**), `npm run at` (**10 escenarios verdes**),
+`npm run test` (**21 verdes**), `npm run at` (**11 escenarios verdes**),
 `git log --oneline` (alternancia RED:/GREEN:) y `git shortlog -sne`
 (rotación entre los 3 integrantes). Recordar: **Node 22+** (ver §8).
 
