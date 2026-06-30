@@ -3,7 +3,34 @@ import { vidasDeNivel } from "../domain/niveles";
 import { mountApp, AccionesJuego } from "./main";
 import { mountSetup } from "./setup";
 
-const PALABRAS = ["PERRO", "CABALLO", "ELEFANTE", "TIGRE", "LEON"];
+// PERRO queda primera a propósito: el AT "palabra al azar" usa ?seed=0 y
+// espera la palabra del índice 0 (5 letras).
+const PALABRAS = [
+  "PERRO",
+  "CABALLO",
+  "ELEFANTE",
+  "TIGRE",
+  "LEON",
+  "JIRAFA",
+  "COCODRILO",
+  "MARIPOSA",
+  "TORTUGA",
+  "PINGUINO",
+  "CANGURO",
+  "MURCIELAGO",
+  "MONTAÑA",
+  "GUITARRA",
+  "COMPUTADORA",
+  "BICICLETA",
+  "BIBLIOTECA",
+  "CHOCOLATE",
+  "MANZANA",
+  "NARANJA",
+  "ZANAHORIA",
+  "ARAÑA",
+  "PAJARO",
+  "VENTANA",
+];
 
 const params = new URLSearchParams(window.location.search);
 const wordParam = params.get("word");
