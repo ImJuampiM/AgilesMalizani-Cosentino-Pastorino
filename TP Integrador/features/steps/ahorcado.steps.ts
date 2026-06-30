@@ -18,6 +18,13 @@ Given(
   },
 );
 
+Given(
+  "una partida con la palabra {string} y la pista {string}",
+  async ({ page }, palabra: string, pista: string) => {
+    await page.goto(`/?word=${encodeURIComponent(palabra)}&pista=${encodeURIComponent(pista)}`);
+  },
+);
+
 When("el jugador adivina la letra {string}", async ({ page }, letra: string) => {
   const input = page.getByRole("textbox");
   await input.fill(letra);
@@ -58,4 +65,8 @@ Then("las letras usadas son {string}", async ({ page }, letras: string) => {
 
 Then("se ve el marcador {string}", async ({ page }, marcador: string) => {
   await expect(page.getByTestId("scoreboard")).toHaveText(marcador);
+});
+
+Then("se ve la pista {string}", async ({ page }, pista: string) => {
+  await expect(page.getByTestId("hint")).toHaveText(pista);
 });
