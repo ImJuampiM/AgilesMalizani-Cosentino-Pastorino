@@ -24,7 +24,7 @@ export class Ahorcado {
       return "terminada";
     }
     const normalizada = letra.toUpperCase();
-    if (!/^[A-Z]$/.test(normalizada)) {
+    if (!/^[A-ZÑ]$/.test(normalizada)) {
       return "invalida";
     }
     if (this.adivinadas.has(normalizada)) {
