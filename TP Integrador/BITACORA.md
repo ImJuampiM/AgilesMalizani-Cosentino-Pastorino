@@ -493,3 +493,18 @@ CI del TP funcionando. Deploy a Pages montado y a la espera de habilitar Pages
 
 **Estado al cierre del ciclo de UI:** 35 unit tests y 19 acceptance tests en verde. Teclado en pantalla clickeable, muñeco dibujado y la app con estilos. **Resumen de la sesión 9:** ESLint (quality gate, lo que pedía la corrección) + F5 Jugar de nuevo + F6 Marcador + F7 Niveles + mejora de UI. **7 features de Aprobación Directa** en total (F1–F7).
 
+### Aprobación Directa — Feature 8: Pista de la palabra
+
+> La palabra puede llevar una pista asociada. `Ahorcado` la toma por constructor
+> y la expone con `pista()`; `Sesion` la propaga. Seam de UI `?pista=`.
+
+- **[RED]** Acceptance Test "Pista de la palabra": con la palabra "GATO" y la pista "Animal domestico" se debe ver "Pista: Animal domestico". Falla porque no existe el elemento de pista. Los 19 ATs anteriores siguen en verde. (`61a5525`)
+- **[RED]** Unit Test: un ahorcado expone la pista asociada a la palabra. Falla porque `pista()` no existe. (`01241a6`)
+- **[GREEN]** `Ahorcado` toma `pistaTexto` por constructor (default "") y expone `pista()`. 36 unit tests en verde. (`22d898a`)
+- **[TEST]** Se documenta que un ahorcado sin pista devuelve "" (rama por defecto, ya verde). 37 unit tests. (`5c04f9b`)
+- **[RED]** Unit Test: una sesion creada con una pista se la pasa a la partida. Falla (devuelve ""). (`fa0e10b`)
+- **[GREEN]** `Sesion` acepta `pista` (default "") y se la pasa a la partida en curso y a las de `nuevaPartida()`. 38 unit tests en verde. (`fe45faf`)
+- **[GREEN]** Acceptance Test "Pista de la palabra" en verde: `index.ts` lee `?pista=` y `main.ts` muestra `<div data-testid="hint">Pista: ...</div>` (con estilo). 20 acceptance tests en verde, cobertura 100% en `src/`. (`9a82373`)
+
+**Estado al cierre de la F8:** 38 unit tests y 20 acceptance tests en verde. Octava feature de Aprobación Directa (Pista de la palabra) completa.
+

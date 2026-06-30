@@ -142,3 +142,15 @@ UTs (`Ahorcado`, `vidasDeNivel(nivel)`, `Sesion`):
 AT (sin UTs nuevos): hacer click en una tecla del teclado en pantalla adivina
 esa letra, igual que tipearla y presionar Enter.
 
+## Aprobación Directa — Feature 8: Pista de la palabra
+
+> La palabra puede llevar una pista/categoría asociada. `Ahorcado` la recibe por
+> constructor y la expone con `pista()`; `Sesion` la propaga a cada partida. Seam
+> de UI: `?pista=` en la URL. La UI muestra "Pista: ...".
+
+UTs (`Ahorcado.pista()` / `Sesion`):
+
+- un ahorcado expone la pista asociada a la palabra
+- un ahorcado sin pista devuelve una pista vacia
+- una sesion creada con una pista se la pasa a la partida en curso
+
