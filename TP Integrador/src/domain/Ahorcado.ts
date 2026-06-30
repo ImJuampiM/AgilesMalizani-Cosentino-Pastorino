@@ -5,7 +5,12 @@ export class Ahorcado {
   constructor(
     private readonly palabra: string,
     private readonly vidas: number = 6,
+    private readonly pistaTexto: string = "",
   ) {}
+
+  pista(): string {
+    return this.pistaTexto;
+  }
 
   private quitarAcentos(texto: string): string {
     return texto
