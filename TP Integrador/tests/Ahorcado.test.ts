@@ -108,3 +108,22 @@ it("partesVisibles devuelve cabeza con 1 error", () => {
   expect(juego.partesVisibles()).toEqual(["cabeza"]);
 });
 
+it("partesVisibles devuelve las 6 partes con 6 errores", () => {
+  const juego = new Ahorcado("GATO");
+  juego.adivinar("B");
+  juego.adivinar("C");
+  juego.adivinar("D");
+  juego.adivinar("F");
+  juego.adivinar("H");
+  juego.adivinar("J");
+  expect(juego.partesVisibles()).toEqual([
+    "cabeza",
+    "cuerpo",
+    "brazo izquierdo",
+    "brazo derecho",
+    "pierna izquierda",
+    "pierna derecha",
+  ]);
+});
+
+
