@@ -62,6 +62,6 @@ export class Ahorcado {
   }
 
   letrasUsadas(): string[] {
-    return [];
+    return [...this.adivinadas];
   }
 }
