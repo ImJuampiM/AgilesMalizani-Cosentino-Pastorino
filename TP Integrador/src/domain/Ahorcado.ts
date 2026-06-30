@@ -60,4 +60,8 @@ export class Ahorcado {
   partesVisibles(): string[] {
     return Ahorcado.PARTES.slice(0, this.fallos);
   }
+
+  letrasUsadas(): string[] {
+    return [];
+  }
 }
