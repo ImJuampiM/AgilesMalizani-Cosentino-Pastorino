@@ -3,6 +3,8 @@ import { elegirPalabra } from "./elegirPalabra";
 
 export class Sesion {
   private partida: Ahorcado;
+  private partidasGanadas = 0;
+  private partidasPerdidas = 0;
 
   constructor(
     private readonly palabras: string[],
@@ -17,5 +19,13 @@ export class Sesion {
 
   nuevaPartida(): void {
     this.partida = new Ahorcado(elegirPalabra(this.palabras, this.rng));
+  }
+
+  ganadas(): number {
+    return this.partidasGanadas;
+  }
+
+  perdidas(): number {
+    return this.partidasPerdidas;
   }
 }
