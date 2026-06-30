@@ -79,3 +79,7 @@ Then("se ve el marcador {string}", async ({ page }, marcador: string) => {
 Then("se ve la pista {string}", async ({ page }, pista: string) => {
   await expect(page.getByTestId("hint")).toHaveText(pista);
 });
+
+Then("se ve la pantalla del jugador 1", async ({ page }) => {
+  await expect(page.getByTestId("setup-word")).toBeVisible();
+});
