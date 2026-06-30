@@ -2,7 +2,10 @@ export class Ahorcado {
   private readonly adivinadas = new Set<string>();
   private fallos = 0;
 
-  constructor(private readonly palabra: string) {}
+  constructor(
+    private readonly palabra: string,
+    private readonly vidas: number = 6,
+  ) {}
 
   private quitarAcentos(texto: string): string {
     return texto
@@ -25,7 +28,7 @@ export class Ahorcado {
   }
 
   vidasRestantes(): number {
-    return 6 - this.fallos;
+    return this.vidas - this.fallos;
   }
 
   adivinar(letra: string): string {
