@@ -137,4 +137,11 @@ it("adivinar una letra la agrega a las letras usadas", () => {
   expect(juego.letrasUsadas()).toEqual(["A"]);
 });
 
+it("las letras usadas incluyen aciertos y fallos en orden de intento", () => {
+  const juego = new Ahorcado("GATO");
+  juego.adivinar("A");
+  juego.adivinar("E");
+  expect(juego.letrasUsadas()).toEqual(["A", "E"]);
+});
+
 
