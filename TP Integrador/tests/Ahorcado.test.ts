@@ -149,4 +149,10 @@ it("adivinar ñ es una jugada válida (no devuelve invalida)", () => {
   expect(juego.adivinar("Ñ")).not.toBe("invalida");
 });
 
+it("adivinar una vocal sin acento revela la vocal acentuada en la palabra", () => {
+  const juego = new Ahorcado("LEÓN");
+  juego.adivinar("O");
+  expect(juego.palabraEnmascarada()).toBe("_ _ Ó _");
+});
+
 
