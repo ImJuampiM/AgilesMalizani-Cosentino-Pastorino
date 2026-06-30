@@ -44,3 +44,7 @@ Then("el muñeco muestra {string}", async ({ page }, partes: string) => {
 Then("las letras usadas son {string}", async ({ page }, letras: string) => {
   await expect(page.getByTestId("used-keys")).toHaveText(letras);
 });
+
+Then("se ve el marcador {string}", async ({ page }, marcador: string) => {
+  await expect(page.getByTestId("scoreboard")).toHaveText(marcador);
+});
