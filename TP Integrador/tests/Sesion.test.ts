@@ -20,6 +20,11 @@ it("una sesion creada con una cantidad de vidas arranca la partida con esas vida
   expect(sesion.partidaActual().vidasRestantes()).toBe(4);
 });
 
+it("una sesion creada con una pista se la pasa a la partida en curso", () => {
+  const sesion = new Sesion(["GATO"], () => 0, 6, "Animal domestico");
+  expect(sesion.partidaActual().pista()).toBe("Animal domestico");
+});
+
 it("una sesion nueva tiene el marcador en cero", () => {
   const sesion = new Sesion(["GATO"], () => 0);
   expect(sesion.ganadas()).toBe(0);
