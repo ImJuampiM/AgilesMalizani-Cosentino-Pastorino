@@ -18,6 +18,11 @@ export class Sesion {
   }
 
   nuevaPartida(): void {
+    if (this.partida.estaGanada()) {
+      this.partidasGanadas++;
+    } else if (this.partida.estaPerdida()) {
+      this.partidasPerdidas++;
+    }
     this.partida = new Ahorcado(elegirPalabra(this.palabras, this.rng));
   }
 
