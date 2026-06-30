@@ -83,3 +83,14 @@ UTs (`Ahorcado.letrasUsadas()`):
 - adivinar una letra la agrega a las letras usadas
 - las letras usadas incluyen aciertos y fallos en orden de intento
 
+## Aprobación Directa — Feature 4: Acentos y Ñ
+
+> Normalizar acentos al comparar (á==a) y aceptar la Ñ como letra válida.
+
+UTs (`Ahorcado`):
+
+- adivinar ñ es una jugada válida (no devuelve invalida)
+- adivinar una vocal sin acento revela la vocal acentuada en la palabra
+- la partida se gana al adivinar todas las letras incluyendo acentuadas
+- la ñ no se normaliza a n (son letras distintas)
+

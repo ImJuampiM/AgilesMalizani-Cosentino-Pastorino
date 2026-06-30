@@ -144,4 +144,9 @@ it("las letras usadas incluyen aciertos y fallos en orden de intento", () => {
   expect(juego.letrasUsadas()).toEqual(["A", "E"]);
 });
 
+it("adivinar ñ es una jugada válida (no devuelve invalida)", () => {
+  const juego = new Ahorcado("CAÑA");
+  expect(juego.adivinar("Ñ")).not.toBe("invalida");
+});
+
 
