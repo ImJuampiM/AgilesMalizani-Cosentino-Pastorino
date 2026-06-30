@@ -14,3 +14,9 @@ it("nuevaPartida reemplaza la partida en curso por una en limpio", () => {
   expect(sesion.partidaActual().palabraEnmascarada()).toBe("_ _ _ _");
   expect(sesion.partidaActual().vidasRestantes()).toBe(6);
 });
+
+it("una sesion nueva tiene el marcador en cero", () => {
+  const sesion = new Sesion(["GATO"], () => 0);
+  expect(sesion.ganadas()).toBe(0);
+  expect(sesion.perdidas()).toBe(0);
+});
