@@ -390,3 +390,21 @@ verde. Tercera feature de Aprobación Directa (Teclado en pantalla) completa.
 CI del TP funcionando. Deploy a Pages montado y a la espera de habilitar Pages
 (paso manual). Falta al menos 1 feature más para el desafío (§10).
 
+---
+
+## Sesión 8 — 30/06/2026 (autor: Juan Jose Pastorino)
+
+### Aprobación Directa — Feature 4: Acentos y Ñ
+
+> Se normalizan los acentos al comparar (`á`==`a`) y se acepta la `Ñ` como letra válida. La UI no cambia porque sigue consumiendo el dominio transparente.
+
+- **00:30 — [RED]** Acceptance Test "Soporte de acentos y ñ": al iniciar con "LEÓN" y tipear "O" se debe ver "_ _ Ó _". Al iniciar con "CAÑA" y tipear "Ñ" se debe ver "_ _ Ñ _". Fallan ambos escenarios porque la regex rechaza la Ñ y la "O" no matchea la "Ó". Los 11 ATs anteriores siguen en verde. Rojo honesto confirmado antes de tocar producción.
+- **00:31 — [RED]** Unit Test: adivinar ñ es una jugada válida (no devuelve invalida). Falla porque devuelve "invalida". Los 21 unit tests anteriores siguen en verde.
+- **00:32 — [GREEN]** Se modifica la regex en `adivinar` a `/^[A-ZÑ]$/`. Los 22 unit tests quedan en verde.
+- **00:32 — [RED]** Unit Test: adivinar una vocal sin acento revela la vocal acentuada en la palabra. Falla devolviendo guiones. Los 22 unit tests anteriores siguen en verde.
+- **00:33 — [GREEN]** Se agrega el método privado `quitarAcentos` y se aplica a las comparaciones del dominio. Los 23 unit tests quedan en verde.
+- **00:33 — [TEST]** Se documentan dos UTs adicionales: "la partida se gana al adivinar todas las letras incluyendo acentuadas" y "la ñ no se normaliza a n". Ya están en verde porque la refactorización fue general y `quitarAcentos` preserva la Ñ. Total 25 unit tests en verde.
+- **00:34 — [GREEN]** Acceptance Test "Soporte de acentos y ñ" en verde: los escenarios de la vocal acentuada y la ñ pasan correctamente de punta a punta.
+
+**Estado al cierre de la sesión 8:** 25 unit tests y 13 acceptance tests en verde. Cuarta feature de Aprobación Directa (Acentos y Ñ) completa. **¡El desafío mínimo de 4 features para Aprobación Directa de la guía está completado!**
+
