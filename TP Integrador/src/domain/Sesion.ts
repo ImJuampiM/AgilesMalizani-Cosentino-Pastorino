@@ -10,8 +10,9 @@ export class Sesion {
     private readonly palabras: string[],
     private readonly rng: () => number,
     private readonly vidas: number = 6,
+    private readonly pista: string = "",
   ) {
-    this.partida = new Ahorcado(elegirPalabra(palabras, rng), vidas);
+    this.partida = new Ahorcado(elegirPalabra(palabras, rng), vidas, pista);
   }
 
   partidaActual(): Ahorcado {
@@ -24,7 +25,11 @@ export class Sesion {
     } else if (this.partida.estaPerdida()) {
       this.partidasPerdidas++;
     }
-    this.partida = new Ahorcado(elegirPalabra(this.palabras, this.rng), this.vidas);
+    this.partida = new Ahorcado(
+      elegirPalabra(this.palabras, this.rng),
+      this.vidas,
+      this.pista,
+    );
   }
 
   ganadas(): number {
