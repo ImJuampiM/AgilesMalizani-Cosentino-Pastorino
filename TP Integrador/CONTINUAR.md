@@ -552,11 +552,15 @@ dominio con sus dependencias inyectadas, y la UI/composition root solo cablea.
 - Un solo job: **`TP Integrador - Ahorcado (UT + AT)`** (Node 22, ubuntu), con
   el **pipeline completo** que pedía la corrección del profe:
   `npm install` → `npx playwright install --with-deps chromium` →
-  **build** (`npm run build`) → **análisis estático** (`npm run typecheck`,
-  `tsc --noEmit`) → **tests + coverage** (`npm run coverage`,
-  `vitest run --coverage` — 21 UT, 100% de cobertura en `src/`) →
-  **AT** (`npm run at`, 11 escenarios Playwright). Sin servicios externos
-  (no se usó SonarCloud; el análisis es `tsc` + el coverage de Vitest).
+  **build** (`npm run build`) → **typecheck** (`npm run typecheck`,
+  `tsc --noEmit`, validación de tipos) → **análisis estático con quality gate**
+  (`npm run lint`, ESLint `--max-warnings 0`: corta el build ante cualquier
+  error/warning) → **tests + coverage** (`npm run coverage`,
+  `vitest run --coverage` — 27 UT, 100% de cobertura en `src/`) →
+  **AT** (`npm run at`, 14 escenarios Playwright). Sin servicios externos: el
+  análisis de calidad es **ESLint** (flat config + `typescript-eslint`) y el
+  typecheck de `tsc` queda como validación de tipos complementaria. Esto cubre
+  la etapa de **análisis estático con gate** que pedía la 1ª corrección del profe.
 - Se usa `npm install` (no `npm ci`) a propósito: el lockfile fue generado en
   macOS y, por el bug cross-platform de las deps opcionales nativas de rolldown
   (ver §8), `npm ci` puede no traer el binding de Linux y romper Vite en CI.

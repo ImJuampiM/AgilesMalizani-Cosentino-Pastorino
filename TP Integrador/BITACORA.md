@@ -435,3 +435,15 @@ CI del TP funcionando. Deploy a Pages montado y a la espera de habilitar Pages
 
 **Estado al cierre de la F5:** 27 unit tests y 14 acceptance tests en verde. Quinta feature de Aprobación Directa (Jugar de nuevo) completa.
 
+### Análisis estático con quality gate (lo que bloqueaba la corrección)
+
+> La corrección del profe pedía un análisis estático **de calidad** con un gate
+> que corte el build (el `tsc` valida tipos, no calidad). Se integra **ESLint**
+> (flat config + `typescript-eslint`) como esa etapa.
+
+- **[CI]** Se agregan `eslint`, `@eslint/js` y `typescript-eslint` como devDependencies y `eslint.config.js` con `js.configs.recommended` + `tseslint.configs.recommended` (ignora `dist/`, `coverage/`, `.features-gen/`, etc.). Script nuevo: `npm run lint` = `eslint . --max-warnings 0` (devuelve != 0 ante cualquier error o warning → corta el pipeline).
+- **[STYLE]** Al correr el lint por primera vez detectó un problema real: `import { describe }` sin uso en `tests/Ahorcado.test.ts`. Se quitó el import. El gate quedó en verde (exit 0). Demuestra que el análisis es efectivo, no decorativo. (`9324f23`)
+- **[CI]** Se agrega el step **"Analisis estatico - ESLint (quality gate)"** en `ci.yml`, antes de los tests y el deploy. Como `deploy` tiene `needs: build-test`, si el lint falla el sitio no se publica. El `typecheck` (`tsc`) queda como validación de tipos complementaria, no se elimina. (`2e957ab`)
+
+**Estado tras integrar ESLint:** pipeline = build → typecheck → **ESLint (gate)** → unit+coverage (100%) → AT (14) → deploy. Con esto se cubre la única etapa que faltaba para aprobar según la corrección.
+
