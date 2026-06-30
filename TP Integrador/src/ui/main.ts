@@ -21,6 +21,7 @@ export function mountApp(root: HTMLElement, sesion: Sesion): void {
       : "";
 
     root.innerHTML = `
+      <div data-testid="scoreboard">Ganadas: ${sesion.ganadas()} - Perdidas: ${sesion.perdidas()}</div>
       <div data-testid="hangman">${juego.partesVisibles().join(", ")}</div>
       <div data-testid="word">${terminada ? juego.palabraRevelada() : juego.palabraEnmascarada()}</div>
       <div data-testid="lives">${juego.vidasRestantes()}</div>
