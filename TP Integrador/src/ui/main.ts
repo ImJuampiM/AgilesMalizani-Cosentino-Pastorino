@@ -3,6 +3,12 @@ import "./styles.css";
 
 const LETRAS = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split("");
 
+const NIVELES: { id: string; etiqueta: string }[] = [
+  { id: "facil", etiqueta: "Fácil" },
+  { id: "normal", etiqueta: "Normal" },
+  { id: "dificil", etiqueta: "Difícil" },
+];
+
 // Partes del muñeco en el mismo orden que `Ahorcado.partesVisibles()`.
 const PARTES_SVG = [
   '<circle cx="90" cy="40" r="10" />',
@@ -12,6 +18,13 @@ const PARTES_SVG = [
   '<line x1="90" y1="92" x2="72" y2="118" />',
   '<line x1="90" y1="92" x2="108" y2="118" />',
 ];
+
+// Acciones de reconfiguración que el composition root (index.ts) le presta a la
+// UI para los controles en pantalla que arrancan una partida distinta.
+export interface AccionesJuego {
+  nuevoNivel: (nivel: string) => void;
+  modoDosJugadores: () => void;
+}
 
 function dibujarMuneco(partesVisibles: number): string {
   const cuerpo = PARTES_SVG.slice(0, partesVisibles).join("");
@@ -25,7 +38,12 @@ function dibujarMuneco(partesVisibles: number): string {
     </svg>`;
 }
 
-export function mountApp(root: HTMLElement, sesion: Sesion): void {
+export function mountApp(
+  root: HTMLElement,
+  sesion: Sesion,
+  acciones: AccionesJuego,
+  nivel = "normal",
+): void {
   let mensajeAviso = "";
 
   function render(): void {
@@ -54,12 +72,24 @@ export function mountApp(root: HTMLElement, sesion: Sesion): void {
       return `<button class="tecla" data-tecla="${letra}"${deshabilitada ? " disabled" : ""}>${letra}</button>`;
     }).join("");
 
+    const niveles = NIVELES.map(
+      (n) =>
+        `<button class="nivel${n.id === nivel ? " activo" : ""}" data-nivel="${n.id}">${n.etiqueta}</button>`,
+    ).join("");
+
     root.innerHTML = `
       <div class="ahorcado">
         <header class="barra">
           <h1>Ahorcado</h1>
           <div class="marcador" data-testid="scoreboard">Ganadas: ${sesion.ganadas()} - Perdidas: ${sesion.perdidas()}</div>
         </header>
+        <div class="controles">
+          <div class="niveles" role="group" aria-label="Dificultad">${niveles}</div>
+          <div class="acciones">
+            <button class="accion" data-accion="nueva">Nueva palabra</button>
+            <button class="accion" data-accion="duo">2 jugadores</button>
+          </div>
+        </div>
         <div class="tablero">
           ${dibujarMuneco(juego.partesVisibles().length)}
           <div class="panel">
@@ -100,6 +130,22 @@ export function mountApp(root: HTMLElement, sesion: Sesion): void {
     root.querySelectorAll<HTMLButtonElement>("[data-tecla]").forEach((boton) => {
       boton.addEventListener("click", () => jugar(boton.dataset.tecla!));
     });
+
+    root.querySelectorAll<HTMLButtonElement>("[data-nivel]").forEach((boton) => {
+      boton.addEventListener("click", () => acciones.nuevoNivel(boton.dataset.nivel!));
+    });
+
+    root
+      .querySelector<HTMLButtonElement>('[data-accion="nueva"]')!
+      .addEventListener("click", () => {
+        sesion.nuevaPartida();
+        mensajeAviso = "";
+        render();
+      });
+
+    root
+      .querySelector<HTMLButtonElement>('[data-accion="duo"]')!
+      .addEventListener("click", () => acciones.modoDosJugadores());
 
     const botonReinicio = root.querySelector<HTMLButtonElement>('[data-testid="play-again"]');
     botonReinicio?.addEventListener("click", () => {

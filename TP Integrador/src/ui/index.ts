@@ -1,6 +1,6 @@
 import { Sesion } from "../domain/Sesion";
 import { vidasDeNivel } from "../domain/niveles";
-import { mountApp } from "./main";
+import { mountApp, AccionesJuego } from "./main";
 import { mountSetup } from "./setup";
 
 const PALABRAS = ["PERRO", "CABALLO", "ELEFANTE", "TIGRE", "LEON"];
@@ -12,26 +12,45 @@ const nivelParam = params.get("nivel");
 const pistaParam = params.get("pista");
 const modoParam = params.get("modo");
 
-const vidas = vidasDeNivel(nivelParam ?? "normal");
 const pista = pistaParam ?? "";
-
 const root = document.getElementById("app");
 
-function iniciar(palabras: string[], rng: () => number): void {
-  if (root) {
-    mountApp(root, new Sesion(palabras, rng, vidas, pista));
+let nivelActual = nivelParam ?? "normal";
+
+// Fuente de palabras según los seams de URL (?word fija, ?seed determinista o azar).
+function fuente(): { palabras: string[]; rng: () => number } {
+  if (wordParam !== null) {
+    return { palabras: [wordParam], rng: () => 0 };
   }
+  const rng =
+    seedParam !== null ? () => Number(seedParam) / PALABRAS.length : Math.random;
+  return { palabras: PALABRAS, rng };
+}
+
+const acciones: AccionesJuego = {
+  nuevoNivel(nivel) {
+    nivelActual = nivel;
+    montarJuego();
+  },
+  modoDosJugadores() {
+    montarSetup();
+  },
+};
+
+function montarJuego(palabras?: string[], rng?: () => number): void {
+  if (!root) return;
+  const origen = palabras && rng ? { palabras, rng } : fuente();
+  const sesion = new Sesion(origen.palabras, origen.rng, vidasDeNivel(nivelActual), pista);
+  mountApp(root, sesion, acciones, nivelActual);
+}
+
+function montarSetup(): void {
+  if (!root) return;
+  mountSetup(root, (palabra) => montarJuego([palabra], () => 0));
 }
 
 if (modoParam === "duo" && wordParam === null) {
-  // Modo dos jugadores: el jugador 1 ingresa la palabra antes de empezar.
-  if (root) {
-    mountSetup(root, (palabra) => iniciar([palabra], () => 0));
-  }
-} else if (wordParam !== null) {
-  iniciar([wordParam], () => 0);
+  montarSetup();
 } else {
-  const rng =
-    seedParam !== null ? () => Number(seedParam) / PALABRAS.length : Math.random;
-  iniciar(PALABRAS, rng);
+  montarJuego();
 }
