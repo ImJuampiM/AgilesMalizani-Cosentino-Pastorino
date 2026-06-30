@@ -1,5 +1,4 @@
-import { Ahorcado } from "../domain/Ahorcado";
-import { elegirPalabra } from "../domain/elegirPalabra";
+import { Sesion } from "../domain/Sesion";
 import { mountApp } from "./main";
 
 const PALABRAS = ["PERRO", "CABALLO", "ELEFANTE", "TIGRE", "LEON"];
@@ -8,16 +7,18 @@ const params = new URLSearchParams(window.location.search);
 const wordParam = params.get("word");
 const seedParam = params.get("seed");
 
-let palabra: string;
+let palabras: string[];
+let rng: () => number;
 if (wordParam !== null) {
-  palabra = wordParam;
+  palabras = [wordParam];
+  rng = () => 0;
 } else {
-  const rng =
+  palabras = PALABRAS;
+  rng =
     seedParam !== null ? () => Number(seedParam) / PALABRAS.length : Math.random;
-  palabra = elegirPalabra(PALABRAS, rng);
 }
 
 const root = document.getElementById("app");
 if (root) {
-  mountApp(root, new Ahorcado(palabra));
+  mountApp(root, new Sesion(palabras, rng));
 }

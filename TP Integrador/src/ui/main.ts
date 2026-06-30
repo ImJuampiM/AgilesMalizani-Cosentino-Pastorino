@@ -1,9 +1,12 @@
-import { Ahorcado } from "../domain/Ahorcado";
+import { Sesion } from "../domain/Sesion";
 
-export function mountApp(root: HTMLElement, juego: Ahorcado): void {
+export function mountApp(root: HTMLElement, sesion: Sesion): void {
   let mensajeAviso = "";
 
   function render(): void {
+    const juego = sesion.partidaActual();
+    const terminada = juego.estaGanada() || juego.estaPerdida();
+
     let mensaje = "";
     if (juego.estaGanada()) {
       mensaje = `<div data-testid="message">GANASTE</div>`;
@@ -13,12 +16,17 @@ export function mountApp(root: HTMLElement, juego: Ahorcado): void {
       mensaje = `<div data-testid="message">${mensajeAviso}</div>`;
     }
 
+    const botonJugarDeNuevo = terminada
+      ? `<button data-testid="play-again">Jugar de nuevo</button>`
+      : "";
+
     root.innerHTML = `
       <div data-testid="hangman">${juego.partesVisibles().join(", ")}</div>
-      <div data-testid="word">${juego.estaGanada() || juego.estaPerdida() ? juego.palabraRevelada() : juego.palabraEnmascarada()}</div>
+      <div data-testid="word">${terminada ? juego.palabraRevelada() : juego.palabraEnmascarada()}</div>
       <div data-testid="lives">${juego.vidasRestantes()}</div>
       <div data-testid="used-keys">${juego.letrasUsadas().join(", ")}</div>
       <input type="text" />
+      ${botonJugarDeNuevo}
       ${mensaje}
     `;
     const input = root.querySelector("input")!;
@@ -35,6 +43,12 @@ export function mountApp(root: HTMLElement, juego: Ahorcado): void {
         }
         render();
       }
+    });
+    const botonReinicio = root.querySelector<HTMLButtonElement>('[data-testid="play-again"]');
+    botonReinicio?.addEventListener("click", () => {
+      sesion.nuevaPartida();
+      mensajeAviso = "";
+      render();
     });
   }
 
