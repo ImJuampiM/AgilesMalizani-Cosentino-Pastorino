@@ -21,6 +21,11 @@ it("un ahorcado expone la pista asociada a la palabra", () => {
   expect(juego.pista()).toBe("Animal domestico");
 });
 
+it("un ahorcado sin pista devuelve una pista vacia", () => {
+  const juego = new Ahorcado("GATO");
+  expect(juego.pista()).toBe("");
+});
+
 it("adivinar una letra presente revela todas sus ocurrencias", () => {
   const juego = new Ahorcado("ALA");
   juego.adivinar("A");
