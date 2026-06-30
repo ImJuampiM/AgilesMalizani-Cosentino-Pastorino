@@ -14,4 +14,8 @@ export class Sesion {
   partidaActual(): Ahorcado {
     return this.partida;
   }
+
+  nuevaPartida(): void {
+    this.partida = new Ahorcado(elegirPalabra(this.palabras, this.rng));
+  }
 }
