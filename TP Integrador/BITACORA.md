@@ -508,3 +508,17 @@ CI del TP funcionando. Deploy a Pages montado y a la espera de habilitar Pages
 
 **Estado al cierre de la F8:** 38 unit tests y 20 acceptance tests en verde. Octava feature de Aprobación Directa (Pista de la palabra) completa.
 
+### Aprobación Directa — Feature 9: Dos jugadores
+
+> El jugador 1 ingresa la palabra en una pantalla previa; se valida antes de
+> empezar. Lógica de dominio: `esPalabraValida()`. UI: pantalla de setup
+> (`?modo=duo`).
+
+- **[RED]** Acceptance Test "Dos jugadores" (2 escenarios): en `?modo=duo`, al ingresar "SOL" se ve "_ _ _" y 6 vidas; al ingresar "SOL1" se ve "Palabra invalida". Fallan porque no existe la pantalla de setup. Los 20 ATs anteriores siguen en verde. (`7dd5b23`)
+- **[RED]** Unit Test: una palabra de solo letras es valida. Falla porque el módulo `validarPalabra` no existe. (`1b77e1f`)
+- **[GREEN]** Se crea `src/domain/validarPalabra.ts` con `esPalabraValida(texto)` (regex de solo letras con acentos y ñ, recorta espacios). 39 unit tests en verde. (`520b316`)
+- **[TEST]** Se documenta el resto de las reglas: vacía/con símbolos inválidas (rama false) y acentos/ñ válidos. 42 unit tests en verde. (`fa02c78`)
+- **[GREEN]** Acceptance Test "Dos jugadores" en verde: se crea `src/ui/setup.ts` (`mountSetup`) que valida la palabra del jugador 1 y, si es válida, monta el juego con esa palabra; `index.ts` enruta `?modo=duo` a la pantalla de setup. 22 acceptance tests en verde, cobertura 100% en `src/`. (`f8ef533`)
+
+**Estado al cierre de la F9:** 42 unit tests y 22 acceptance tests en verde. Novena feature de Aprobación Directa (Dos jugadores) completa. **Catálogo de features de la guía agotado (F1–F9).**
+

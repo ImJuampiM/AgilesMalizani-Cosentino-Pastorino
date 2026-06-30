@@ -154,3 +154,17 @@ UTs (`Ahorcado.pista()` / `Sesion`):
 - un ahorcado sin pista devuelve una pista vacia
 - una sesion creada con una pista se la pasa a la partida en curso
 
+## Aprobación Directa — Feature 9: Dos jugadores
+
+> El jugador 1 ingresa la palabra en una pantalla previa; recién se empieza si
+> la palabra es válida (sólo letras, con acentos y ñ). Lógica de dominio:
+> `esPalabraValida(texto)`. UI: pantalla de setup (`?modo=duo`) que valida antes
+> de montar el juego con esa palabra (enmascarada para el jugador 2).
+
+UTs (`esPalabraValida(texto: string)`):
+
+- una palabra de solo letras es valida
+- una palabra vacia es invalida
+- una palabra con numeros o simbolos es invalida
+- una palabra con acentos o enie es valida
+
