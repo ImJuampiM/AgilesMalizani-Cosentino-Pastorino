@@ -11,6 +11,10 @@ Given("una partida al azar con la semilla {int}", async ({ page }, semilla: numb
   await page.goto(`/?seed=${semilla}`);
 });
 
+Given("el modo de dos jugadores", async ({ page }) => {
+  await page.goto(`/?modo=duo`);
+});
+
 Given(
   "una partida en nivel {string} con la palabra {string}",
   async ({ page }, nivel: string, palabra: string) => {
@@ -37,6 +41,11 @@ When("el jugador presiona {string}", async ({ page }, boton: string) => {
 
 When("el jugador hace click en la tecla {string}", async ({ page }, letra: string) => {
   await page.getByRole("button", { name: letra, exact: true }).click();
+});
+
+When("el jugador 1 ingresa la palabra {string}", async ({ page }, palabra: string) => {
+  await page.getByTestId("setup-word").fill(palabra);
+  await page.getByRole("button", { name: "Empezar" }).click();
 });
 
 Then("se ve la palabra {string}", async ({ page }, esperada: string) => {
