@@ -268,3 +268,45 @@ Ahorcado está funcionalmente completo según la consigna base.
 **Estado al cierre de la sesión 5:** 15 unit tests y 9 acceptance tests en
 verde. Primera de las features de Aprobación Directa (Palabra al azar)
 completa. Faltan al menos 3 features más para el desafío (§10).
+
+---
+
+## Sesión 6 — 29/06/2026 (autor: Juan Jose Pastorino)
+
+### Aprobación Directa — Feature 2: Dibujo progresivo del muñeco
+
+> El muñeco se dibuja parte por parte (cabeza, cuerpo, brazo izquierdo, brazo
+> derecho, pierna izquierda, pierna derecha) a medida que el jugador acumula
+> errores. El dominio expone `partesVisibles(): string[]` (un slice de un
+> array constante de 6 partes, indexado por la cantidad de fallos). La UI solo
+> renderiza en un `data-testid="hangman"`.
+
+- **21:18 — [RED]** Acceptance Test "dibujo progresivo": al iniciar no hay
+  partes; tras fallar "B" el muñeco muestra "cabeza"; tras 6 fallos muestra
+  las 6 partes. Falla en el primer Then: `getByTestId('hangman')` no existe
+  en el DOM. Los 9 ATs anteriores siguen en verde. Rojo honesto confirmado
+  antes de tocar producción. (`0c68c26`)
+- **21:20 — [RED]** Unit Test: `partesVisibles` devuelve un array vacío con
+  0 errores. Falla: `juego.partesVisibles is not a function`. Los 15 unit
+  tests anteriores siguen en verde. (`8a53d78`)
+- **21:20 — [GREEN]** `partesVisibles()` devuelve `[]` (mínimo código). Los
+  16 unit tests quedan en verde. (`3eebd43`)
+- **21:21 — [RED]** Unit Test: `partesVisibles` devuelve `["cabeza"]` con 1
+  error. Falla: esperaba `["cabeza"]`, recibió `[]`. Los 16 unit tests
+  anteriores siguen en verde. (`fdfb007`)
+- **21:21 — [GREEN]** `partesVisibles()` generalizado: un array constante
+  `PARTES` con las 6 partes del muñeco, y `slice(0, this.fallos)`. Los 17
+  unit tests quedan en verde. (`d116670`)
+- **21:22 — [TEST/DOCS]** Se documenta que `partesVisibles` devuelve las 6
+  partes con 6 errores. Nota: este test ya estaba verde al escribirlo (la
+  generalización con `slice` ya cubre todos los casos). (`66b6d1e`)
+- **21:23 — [GREEN]** Acceptance Test "dibujo progresivo" en verde: la
+  interfaz muestra un `<div data-testid="hangman">` con las partes del muñeco
+  unidas por ", " (dato de `juego.partesVisibles()`). Los 10 ATs pasan de
+  punta a punta. Verificado en el navegador. AT dibujo progresivo completo.
+  (`92a5c5f`)
+
+**Estado al cierre de la sesión 6:** 18 unit tests y 10 acceptance tests en
+verde. Segunda feature de Aprobación Directa (Dibujo progresivo) completa.
+Faltan al menos 2 features más para el desafío (§10).
+

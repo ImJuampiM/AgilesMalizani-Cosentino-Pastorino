@@ -48,12 +48,15 @@ Resumen del modelo mental:
 - **AT 7:** lo hizo **Cosentino** (`lucio`).
 - **Aprobación Directa — Feature 1 (Palabra al azar):** la hizo **Malizani**
   (`JuanPabloMalizani`).
+- **Aprobación Directa — Feature 2 (Dibujo progresivo del muñeco):** la hizo
+  **Pastorino** (`Juan Jose Pastorino`).
 
 Los tres integrantes tienen participación en el TP. La escalera de 7 ATs de
 la guía está **completa** y arrancó el desafío de Aprobación Directa (§10) con
-la primera feature (Palabra al azar, autor Malizani). Para la **próxima**
-feature nueva conviene que arranque **Pastorino** (lleva AT 5 y 6), para
-reequilibrar la rotación (Cosentino: AT 1, 2 y 7; Malizani: AT 3, 4 y F1).
+2 features completadas (F1 Palabra al azar — Malizani, F2 Dibujo progresivo —
+Pastorino). Para la **próxima** feature nueva conviene que arranque
+**Cosentino** para reequilibrar (Cosentino: AT 1, 2 y 7; Malizani: AT 3, 4 y
+F1; Pastorino: AT 5, 6 y F2).
 
 Que cada integrante fije **una sola** identidad de git consistente antes de
 commitear para no ensuciar `git shortlog -sne`.
@@ -94,10 +97,10 @@ TP Integrador/
       Ahorcado.ts             ← TODA la lógica de negocio, sin DOM (código abajo)
       elegirPalabra.ts        ← elige palabra de una lista con un rng inyectable (Aprobación Directa F1)
     ui/
-      main.ts                 ← mountApp(root, juego): pinta word/lives/input/mensaje
+      main.ts                 ← mountApp(root, juego): pinta word/lives/hangman/input/mensaje
       index.ts                ← arranque: ?word= o, si no, palabra al azar de la lista (?seed= determinista)
   tests/
-    Ahorcado.test.ts          ← 13 unit tests, todos en verde (ver abajo)
+    Ahorcado.test.ts          ← 16 unit tests, todos en verde (ver abajo)
     elegirPalabra.test.ts     ← 2 unit tests del selector de palabra al azar
   features/
     iniciar-partida.feature
@@ -108,6 +111,7 @@ TP Integrador/
     letra-repetida.feature
     entrada-invalida.feature  ← 2 escenarios (no-letra / partida terminada)
     palabra-al-azar.feature   ← Aprobación Directa F1: sin ?word= toma una de la lista
+    dibujo-progresivo.feature ← Aprobación Directa F2: muñeco progresivo 0→6 errores
     steps/
       ahorcado.steps.ts       ← 6 steps reutilizables (Given/When/Then)
 ```
@@ -288,7 +292,7 @@ el `string` que devuelve `adivinar()` en un mensaje en pantalla.
 
 ## 6. Tests existentes (todos en verde)
 
-`tests/Ahorcado.test.ts` + `tests/elegirPalabra.test.ts` (Vitest, **15 tests**):
+`tests/Ahorcado.test.ts` + `tests/elegirPalabra.test.ts` (Vitest, **18 tests**):
 
 1. una partida nueva muestra la palabra enmascarada con guiones
 2. una partida nueva empieza con 6 vidas
@@ -305,8 +309,11 @@ el `string` que devuelve `adivinar()` en un mensaje en pantalla.
 13. adivinar con la partida ya perdida no se procesa (no puede ganarse después)
 14. elegirPalabra con un rng que devuelve 0 elige la primera palabra de la lista
 15. elegirPalabra con un rng cercano a 1 elige la última palabra de la lista
+16. partesVisibles devuelve un array vacío con 0 errores
+17. partesVisibles devuelve "cabeza" con 1 error
+18. partesVisibles devuelve las 6 partes con 6 errores
 
-AT en `features/` (**8 features**, todos pasan con `npm run at` — 9 escenarios
+AT en `features/` (**9 features**, todos pasan con `npm run at` — 10 escenarios
 en total, porque `entrada-invalida` tiene 2):
 
 - `iniciar-partida.feature`: "GATO" → ve `_ _ _ _` y 6 vidas.
@@ -320,8 +327,10 @@ en total, porque `entrada-invalida` tiene 2):
   "PERDISTE" (no "GANASTE").
 - `palabra-al-azar.feature`: con `?seed=0` y sin `?word=` → ve `_ _ _ _ _`
   (PERRO, primera de la lista) y 6 vidas.
+- `dibujo-progresivo.feature`: al iniciar no hay partes; tras 1 fallo muestra
+  "cabeza"; tras 6 fallos muestra las 6 partes del muñeco.
 
-`features/steps/ahorcado.steps.ts` define y reutiliza **6 steps**:
+`features/steps/ahorcado.steps.ts` define y reutiliza **8 steps**:
 
 - `Dado una partida con la palabra {string}` → `page.goto(/?word=...)`
 - `Dado una partida al azar con la semilla {int}` → `page.goto(/?seed=...)`
@@ -329,6 +338,8 @@ en total, porque `entrada-invalida` tiene 2):
 - `Entonces se ve la palabra {string}` → `getByTestId('word')`
 - `Entonces se ven {int} vidas` → `getByTestId('lives')`
 - `Entonces se ve el mensaje {string}` → `getByTestId('message')`
+- `Entonces el muñeco no tiene partes` → `getByTestId('hangman')` vacío
+- `Entonces el muñeco muestra {string}` → `getByTestId('hangman')` texto
 
 ## 7. Historial de commits del TP (de más viejo a más nuevo)
 
@@ -450,15 +461,16 @@ La §9 de `GUIA-ATDD-IA-Ahorcado.md` propone, para Aprobación Directa, elegir
 rojo honesto → UTs sobre el dominio → verde → mirar la app), apuntando a
 ~100% de cobertura en `src/domain/`.
 
-> **Avance:** Feature 1 (**Palabra al azar**) ✅ completa y en verde (autor
-> Malizani). Faltan **al menos 3 features más** para cerrar el desafío.
+> **Avance:** Feature 1 (**Palabra al azar**) ✅ completa (Malizani). Feature 2
+> (**Dibujo progresivo**) ✅ completa (Pastorino). Faltan **al menos 2 features
+> más** para cerrar el desafío.
 
 Ideas de la guía (con dónde vive la lógica testeable):
 
 | Feature | Lógica de dominio a cubrir con UTs |
 |---|---|
 | ~~Palabra al azar de una lista~~ ✅ hecha | elegir palabra; **seam** para inyectar el azar y testear determinista |
-| Dibujo progresivo del ahorcado | qué partes del muñeco se muestran según los errores (0→6) |
+| ~~Dibujo progresivo del ahorcado~~ ✅ hecha | `partesVisibles()`: las partes del muñeco según los errores (0→6) |
 | Soporte de acentos y ñ | normalizar: `á` == `a`, tratar la `ñ` (caso borde de "100% ≠ 0 bugs") |
 | Teclado en pantalla | marcar letras ya usadas (acertadas/falladas) como no disponibles |
 | Niveles de dificultad | cantidad de vidas y/o longitud de palabra según el nivel |
@@ -496,7 +508,7 @@ dominio con sus dependencias inyectadas, y la UI/composition root solo cablea.
 
 ### Estado de verificación actual / antes de la defensa:
 
-`npm run test` (**15 verdes**), `npm run at` (**9 escenarios verdes**),
+`npm run test` (**18 verdes**), `npm run at` (**10 escenarios verdes**),
 `git log --oneline` (alternancia RED:/GREEN:) y `git shortlog -sne`
 (rotación entre los 3 integrantes). Recordar: **Node 22+** (ver §8).
 
