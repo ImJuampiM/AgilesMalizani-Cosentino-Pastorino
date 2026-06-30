@@ -155,4 +155,20 @@ it("adivinar una vocal sin acento revela la vocal acentuada en la palabra", () =
   expect(juego.palabraEnmascarada()).toBe("_ _ Ó _");
 });
 
+it("la partida se gana al adivinar todas las letras incluyendo acentuadas", () => {
+  const juego = new Ahorcado("LEÓN");
+  juego.adivinar("L");
+  juego.adivinar("E");
+  juego.adivinar("O");
+  juego.adivinar("N");
+  expect(juego.estaGanada()).toBe(true);
+});
+
+it("la ñ no se normaliza a n (son letras distintas)", () => {
+  const juego = new Ahorcado("CAÑA");
+  juego.adivinar("N");
+  expect(juego.palabraEnmascarada()).toBe("_ _ _ _");
+  expect(juego.vidasRestantes()).toBe(5);
+});
+
 
