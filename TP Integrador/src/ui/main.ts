@@ -17,6 +17,7 @@ export function mountApp(root: HTMLElement, juego: Ahorcado): void {
       <div data-testid="hangman">${juego.partesVisibles().join(", ")}</div>
       <div data-testid="word">${juego.estaGanada() || juego.estaPerdida() ? juego.palabraRevelada() : juego.palabraEnmascarada()}</div>
       <div data-testid="lives">${juego.vidasRestantes()}</div>
+      <div data-testid="used-keys">${juego.letrasUsadas().join(", ")}</div>
       <input type="text" />
       ${mensaje}
     `;
