@@ -36,3 +36,7 @@ Then("el muñeco no tiene partes", async ({ page }) => {
 Then("el muñeco muestra {string}", async ({ page }, partes: string) => {
   await expect(page.getByTestId("hangman")).toHaveText(partes);
 });
+
+Then("las letras usadas son {string}", async ({ page }, letras: string) => {
+  await expect(page.getByTestId("used-keys")).toHaveText(letras);
+});
