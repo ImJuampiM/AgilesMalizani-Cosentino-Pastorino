@@ -94,3 +94,15 @@ UTs (`Ahorcado`):
 - la partida se gana al adivinar todas las letras incluyendo acentuadas
 - la ñ no se normaliza a n (son letras distintas)
 
+## Aprobación Directa — Feature 5: Jugar de nuevo
+
+> Reiniciar la partida sin recargar la página. Se introduce el objeto de
+> dominio `Sesion`, que sostiene la partida en curso y sabe arrancar una nueva
+> (mismo seam de azar inyectable que `elegirPalabra`). La UI sólo agrega el
+> botón "Jugar de nuevo" y le pide a `Sesion` la partida actual.
+
+UTs (`Sesion(palabras: string[], rng: () => number)`):
+
+- una sesion nueva tiene una partida en curso con la palabra enmascarada y 6 vidas
+- nuevaPartida reemplaza la partida en curso por una en limpio
+

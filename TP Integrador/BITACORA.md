@@ -408,3 +408,30 @@ CI del TP funcionando. Deploy a Pages montado y a la espera de habilitar Pages
 
 **Estado al cierre de la sesión 8:** 25 unit tests y 13 acceptance tests en verde. Cuarta feature de Aprobación Directa (Acentos y Ñ) completa. **¡El desafío mínimo de 4 features para Aprobación Directa de la guía está completado!**
 
+---
+
+## Sesión 9 — 30/06/2026 (autor: Lucio Cosentino)
+
+> Llegó la **1ª corrección del profe**: el TP no aprueba todavía por **una sola
+> etapa** — falta **análisis estático con quality gate** (el `tsc` valida tipos
+> pero no es análisis de calidad; integrar SonarQube/CodeQL o al menos ESLint
+> con gate que corte el build). Todo lo demás (escalera de AT, CI con pipeline
+> completo, deploy a Pages y app online) quedó aprobado. También se observó
+> rotación despareja (Lucio concentra ~2/3 de los commits). En esta sesión se
+> sigue sumando features de Aprobación Directa y se integrará ESLint.
+
+### Aprobación Directa — Feature 5: Jugar de nuevo
+
+> Reiniciar la partida sin recargar. Se introduce el objeto de dominio `Sesion`
+> (sostiene la partida en curso y arranca una nueva con el mismo seam de azar
+> inyectable que `elegirPalabra`). La UI agrega el botón "Jugar de nuevo".
+
+- **[RED]** Acceptance Test "Jugar de nuevo": con la palabra "SOL", tras ganar y presionar "Jugar de nuevo" se debe volver a ver "_ _ _" y 6 vidas. Falla porque el botón no existe (timeout del click). Los 13 ATs anteriores siguen en verde. Rojo honesto confirmado antes de tocar producción. (`0266b29`)
+- **[RED]** Unit Test: una sesion nueva tiene una partida en curso con la palabra enmascarada y 6 vidas. Falla porque el módulo `Sesion` no existe. Los 25 unit tests anteriores siguen en verde. (`77c5453`)
+- **[GREEN]** Se crea `src/domain/Sesion.ts` con `partidaActual()`, que arma la partida con `elegirPalabra(palabras, rng)`. 26 unit tests en verde. (`9bf1fcb`)
+- **[RED]** Unit Test: nuevaPartida reemplaza la partida en curso por una en limpio. Falla porque el método no existe. (`07fa55d`)
+- **[GREEN]** Se agrega `nuevaPartida()`, que reemplaza la partida en curso por una nueva. 27 unit tests en verde. (`d6f0b09`)
+- **[GREEN]** Acceptance Test "Jugar de nuevo" en verde: se refactoriza `mountApp` para recibir una `Sesion` y renderizar `partidaActual()`, y se agrega el botón "Jugar de nuevo" (visible al terminar) que llama a `nuevaPartida()`. El composition root (`index.ts`) ahora construye una `Sesion`. 14 acceptance tests en verde, cobertura 100% en `src/`. (`80380e1`)
+
+**Estado al cierre de la F5:** 27 unit tests y 14 acceptance tests en verde. Quinta feature de Aprobación Directa (Jugar de nuevo) completa.
+
