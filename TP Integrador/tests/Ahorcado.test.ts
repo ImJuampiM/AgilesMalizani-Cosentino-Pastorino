@@ -96,3 +96,8 @@ it("adivinar con la partida ya perdida no se procesa", () => {
 
   expect(juego.estaGanada()).toBe(false);
 });
+
+it("partesVisibles devuelve un array vacio con 0 errores", () => {
+  const juego = new Ahorcado("GATO");
+  expect(juego.partesVisibles()).toEqual([]);
+});

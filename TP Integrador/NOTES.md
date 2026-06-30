@@ -59,3 +59,15 @@ UTs (`elegirPalabra(lista: string[], rng: () => number)`):
 
 - elegirPalabra con un rng que devuelve 0 elige la primera palabra de la lista
 - elegirPalabra con un rng cercano a 1 elige la última palabra de la lista
+
+## Aprobación Directa — Feature 2: Dibujo progresivo del muñeco
+
+> El dominio expone `partesVisibles(): string[]` que devuelve las partes del
+> muñeco visibles según la cantidad de errores (0→6). La UI solo renderiza.
+
+UTs (`Ahorcado.partesVisibles()`):
+
+- partesVisibles devuelve un array vacío con 0 errores
+- partesVisibles devuelve "cabeza" con 1 error
+- partesVisibles devuelve las 6 partes con 6 errores
+
