@@ -5,10 +5,22 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
+
+# Permisos que necesita el deploy oficial de GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Un deploy a la vez por rama; no cancela uno en curso
+concurrency:
+  group: "pages-${{ github.ref }}"
+  cancel-in-progress: false
 
 jobs:
-  tp-integrador:
-    name: TP Integrador - Ahorcado (UT + AT)
+  build-test:
+    name: Build, analisis, tests (UT + AT)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -40,3 +52,28 @@ jobs:
 
       - name: Acceptance tests (Playwright BDD)
         run: npm run at
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "TP Integrador/dist"
+
+  deploy:
+    name: Deploy a GitHub Pages
+    needs: build-test
+    # Solo deploya desde main (push o "Run workflow"); nunca desde un PR
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
