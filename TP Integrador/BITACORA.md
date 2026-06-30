@@ -352,7 +352,31 @@ Faltan al menos 2 features más para el desafío (§10).
   Verificado en navegador real (Chromium): vacío al iniciar, "A, E" tras
   adivinar A y E. AT teclado en pantalla completo. (`e322426`)
 
+### CI/CD y Deploy (sesión 7 — Cosentino)
+
+> Se revisó el CI y se montó el deploy. Detalle y estado en CONTINUAR.md §12.
+
+- **[CI]** Se detectó que `.github/workflows/ci.yml` solo corría el
+  `string-calculator` (Python): el CI **no testeaba el TP**. Se agregó un job
+  `tp-integrador` (Node 22: `npm install` → Playwright chromium → `vitest run`
+  → `npm run at`). Verificado en GitHub Actions: run en verde (21 UT + 11 AT).
+  (`919dc2b`)
+- **[CI]** Se quitó el job del `string-calculator`; el workflow quedó con un
+  solo job (el del TP). Verificado en verde. (`7dbbeb3`)
+- **[DEPLOY]** `vite.config.ts` con `base` al subpath del repo solo en build
+  (en dev queda en `/` para no romper los AT), script `build`, y workflow
+  `.github/workflows/deploy.yml` (build → artifact → GitHub Pages). Build
+  local y AT verificados en verde. (`8471850`)
+- **[DEPLOY]** Intento de auto-habilitar Pages con `enablement: true`.
+  (`868ca49`)
+- **[DEPLOY — pendiente]** El deploy falla en `Configure Pages` porque **Pages
+  no está habilitado** en el repo y el token no puede auto-habilitarlo. El
+  build pasa. **Falta el paso manual del dueño:** Settings → Pages → Source
+  "GitHub Actions" (ver CONTINUAR.md §12). URL destino:
+  https://imjuampim.github.io/AgilesMalizani-Cosentino-Pastorino/
+
 **Estado al cierre de la sesión 7:** 21 unit tests y 11 acceptance tests en
 verde. Tercera feature de Aprobación Directa (Teclado en pantalla) completa.
-Falta al menos 1 feature más para el desafío (§10).
+CI del TP funcionando. Deploy a Pages montado y a la espera de habilitar Pages
+(paso manual). Falta al menos 1 feature más para el desafío (§10).
 

@@ -543,3 +543,47 @@ dominio con sus dependencias inyectadas, y la UI/composition root solo cablea.
 - **Rotación de autor real**: cada test nuevo lo arranca alguien distinto,
   con su propia cuenta de git.
 - **Registrar cada paso en `BITACORA.md`** a medida que se avanza.
+
+## 12. CI/CD y Deploy (sesión 7 — Cosentino)
+
+### Integración continua (CI) — ✅ funcionando
+
+- Workflow: `.github/workflows/ci.yml`. Corre en cada **push y PR a `main`**.
+- Un solo job: **`TP Integrador - Ahorcado (UT + AT)`** (Node 22, ubuntu):
+  `npm install` → `npx playwright install --with-deps chromium` →
+  `npx vitest run` (21 UT) → `npm run at` (11 AT).
+- Se usa `npm install` (no `npm ci`) a propósito: el lockfile fue generado en
+  macOS y, por el bug cross-platform de las deps opcionales nativas de rolldown
+  (ver §8), `npm ci` puede no traer el binding de Linux y romper Vite en CI.
+- El job viejo del `string-calculator` (Python + SonarCloud) **se quitó** de
+  este workflow; ahora el CI testea **solo el TP**.
+- **Cómo ver si anda:** pestaña **Actions** del repo
+  (https://github.com/ImJuampiM/AgilesMalizani-Cosentino-Pastorino/actions);
+  cada run muestra ✅/❌/🟡. También aparece el ✅/❌ al lado de cada commit/PR.
+
+### Deploy a GitHub Pages — ⚠️ falta UN paso manual del dueño del repo
+
+- Workflow: `.github/workflows/deploy.yml`. Corre en cada push a `main`
+  (y a mano con "Run workflow"). Hace: `npm install` → `npm run build` →
+  sube el `dist/` como artifact → `actions/deploy-pages`.
+- Build de producción: `npm run build` (script nuevo) usa `vite.config.ts`,
+  que pone `base` al subpath del repo **solo en build**
+  (`/AgilesMalizani-Cosentino-Pastorino/`); en `dev` queda en `/` para no
+  romper los AT de Playwright. `dist/` está en `.gitignore` (no se versiona).
+- **Estado:** el step `Build` pasa; el deploy **falla en `Configure Pages`**
+  porque **GitHub Pages no está habilitado** en el repo, y el `GITHUB_TOKEN`
+  no puede auto-habilitarlo (ni con `enablement: true`).
+- **ACCIÓN PENDIENTE (la hace el dueño del repo, ImJuampiM, o un admin):**
+  Settings → Pages → **Source: "GitHub Actions"**. Con eso habilitado, el
+  próximo push a `main` (o "Run workflow" en Actions → Deploy a GitHub Pages)
+  deja la app publicada en:
+  **https://imjuampim.github.io/AgilesMalizani-Cosentino-Pastorino/**
+  (probar con `?word=GATO` o `?seed=0`). No hay que tocar más código.
+
+## 13. Qué sigue (próxima sesión)
+
+1. **Habilitar Pages** (paso manual de arriba) y verificar el deploy en verde.
+2. **Feature 4 de Aprobación Directa** (falta ≥1 para cerrar el desafío):
+   la arranca **Malizani** o **Pastorino** (rotación, §1.bis). Candidata
+   estrella de la guía: **Acentos/ñ** (normalizar `á`==`a`, tratar `ñ`;
+   materializa que 100% de cobertura ≠ 0 bugs). Mismo ciclo de siempre (§10).
