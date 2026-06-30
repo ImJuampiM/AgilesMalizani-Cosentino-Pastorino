@@ -47,4 +47,8 @@ export class Ahorcado {
   estaPerdida(): boolean {
     return this.vidasRestantes() <= 0;
   }
+
+  partesVisibles(): string[] {
+    return [];
+  }
 }
