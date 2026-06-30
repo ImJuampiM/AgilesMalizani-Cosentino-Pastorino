@@ -131,4 +131,10 @@ it("una partida nueva no tiene letras usadas", () => {
   expect(juego.letrasUsadas()).toEqual([]);
 });
 
+it("adivinar una letra la agrega a las letras usadas", () => {
+  const juego = new Ahorcado("GATO");
+  juego.adivinar("A");
+  expect(juego.letrasUsadas()).toEqual(["A"]);
+});
+
 
