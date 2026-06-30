@@ -566,24 +566,21 @@ dominio con sus dependencias inyectadas, y la UI/composition root solo cablea.
   (https://github.com/ImJuampiM/AgilesMalizani-Cosentino-Pastorino/actions);
   cada run muestra ✅/❌/🟡. También aparece el ✅/❌ al lado de cada commit/PR.
 
-### Deploy a GitHub Pages — ⚠️ falta UN paso manual del dueño del repo
+### Deploy a GitHub Pages — ✅ funcionando (todo en el mismo workflow CI)
 
-- Workflow: `.github/workflows/deploy.yml`. Corre en cada push a `main`
-  (y a mano con "Run workflow"). Hace: `npm install` → `npm run build` →
-  sube el `dist/` como artifact → `actions/deploy-pages`.
-- Build de producción: `npm run build` (script nuevo) usa `vite.config.ts`,
-  que pone `base` al subpath del repo **solo en build**
-  (`/AgilesMalizani-Cosentino-Pastorino/`); en `dev` queda en `/` para no
-  romper los AT de Playwright. `dist/` está en `.gitignore` (no se versiona).
-- **Estado:** el step `Build` pasa; el deploy **falla en `Configure Pages`**
-  porque **GitHub Pages no está habilitado** en el repo, y el `GITHUB_TOKEN`
-  no puede auto-habilitarlo (ni con `enablement: true`).
-- **ACCIÓN PENDIENTE (la hace el dueño del repo, ImJuampiM, o un admin):**
-  Settings → Pages → **Source: "GitHub Actions"**. Con eso habilitado, el
-  próximo push a `main` (o "Run workflow" en Actions → Deploy a GitHub Pages)
-  deja la app publicada en:
+- **Está unificado dentro de `.github/workflows/ci.yml`** (no hay un
+  `deploy.yml` aparte). El workflow tiene **dos jobs**:
+  1. `build-test` — todo lo de arriba + `configure-pages` +
+     `upload-pages-artifact` (sube `dist/`).
+  2. `deploy` — `needs: build-test`, solo corre desde `main` (push o
+     "Run workflow"), nunca desde un PR; publica con `actions/deploy-pages`.
+- Build de producción: `npm run build` usa `vite.config.ts`, que pone `base`
+  al subpath del repo **solo en build** (`/AgilesMalizani-Cosentino-Pastorino/`);
+  en `dev` queda en `/` para no romper los AT. `dist/` está en `.gitignore`.
+- **GitHub Pages ya está habilitado** (Settings → Pages → Source "GitHub
+  Actions"). La app está publicada y verificada en navegador real:
   **https://imjuampim.github.io/AgilesMalizani-Cosentino-Pastorino/**
-  (probar con `?word=GATO` o `?seed=0`). No hay que tocar más código.
+  (probar con `?word=GATO` o `?seed=0`).
 
 ## 13. Qué sigue (próxima sesión)
 

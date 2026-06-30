@@ -376,11 +376,14 @@ Faltan al menos 2 features más para el desafío (§10).
   local y AT verificados en verde. (`8471850`)
 - **[DEPLOY]** Intento de auto-habilitar Pages con `enablement: true`.
   (`868ca49`)
-- **[DEPLOY — pendiente]** El deploy falla en `Configure Pages` porque **Pages
-  no está habilitado** en el repo y el token no puede auto-habilitarlo. El
-  build pasa. **Falta el paso manual del dueño:** Settings → Pages → Source
-  "GitHub Actions" (ver CONTINUAR.md §12). URL destino:
-  https://imjuampim.github.io/AgilesMalizani-Cosentino-Pastorino/
+- **[DEPLOY]** El dueño habilitó Pages (Settings → Pages → Source "GitHub
+  Actions"). El deploy pasó a verde y la app quedó publicada y verificada en
+  navegador real: https://imjuampim.github.io/AgilesMalizani-Cosentino-Pastorino/
+- **[CI]** Se **unificó todo en un solo workflow** `ci.yml` (se eliminó
+  `deploy.yml`): job `build-test` (build, typecheck, coverage, AT, sube el
+  artifact de Pages) + job `deploy` (`needs: build-test`, solo desde `main`).
+  Run verificado en GitHub Actions: ambos jobs en verde y sitio HTTP 200.
+  (`8d4c66c`)
 
 **Estado al cierre de la sesión 7:** 21 unit tests y 11 acceptance tests en
 verde. Tercera feature de Aprobación Directa (Teclado en pantalla) completa.
