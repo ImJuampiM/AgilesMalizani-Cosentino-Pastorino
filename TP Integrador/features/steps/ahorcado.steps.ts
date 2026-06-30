@@ -28,3 +28,11 @@ Then("se ven {int} vidas", async ({ page }, vidas: number) => {
 Then("se ve el mensaje {string}", async ({ page }, mensaje: string) => {
   await expect(page.getByTestId("message")).toHaveText(mensaje);
 });
+
+Then("el muñeco no tiene partes", async ({ page }) => {
+  await expect(page.getByTestId("hangman")).toHaveText("");
+});
+
+Then("el muñeco muestra {string}", async ({ page }, partes: string) => {
+  await expect(page.getByTestId("hangman")).toHaveText(partes);
+});
