@@ -45,6 +45,10 @@ export function mountApp(root: HTMLElement, sesion: Sesion): void {
       ? `<button data-testid="play-again">Jugar de nuevo</button>`
       : "";
 
+    const pista = juego.pista()
+      ? `<div class="pista" data-testid="hint">Pista: ${juego.pista()}</div>`
+      : "";
+
     const teclado = LETRAS.map((letra) => {
       const deshabilitada = juego.letrasUsadas().includes(letra) || terminada;
       return `<button class="tecla" data-tecla="${letra}"${deshabilitada ? " disabled" : ""}>${letra}</button>`;
@@ -61,6 +65,7 @@ export function mountApp(root: HTMLElement, sesion: Sesion): void {
           <div class="panel">
             <div class="vidas">❤️ <span data-testid="lives">${juego.vidasRestantes()}</span> vidas</div>
             <div class="palabra" data-testid="word">${terminada ? juego.palabraRevelada() : juego.palabraEnmascarada()}</div>
+            ${pista}
             <span class="sr-only" data-testid="hangman">${juego.partesVisibles().join(", ")}</span>
             <span class="sr-only" data-testid="used-keys">${juego.letrasUsadas().join(", ")}</span>
             <input type="text" maxlength="1" placeholder="Escribí una letra y Enter" />

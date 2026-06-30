@@ -8,6 +8,7 @@ const params = new URLSearchParams(window.location.search);
 const wordParam = params.get("word");
 const seedParam = params.get("seed");
 const nivelParam = params.get("nivel");
+const pistaParam = params.get("pista");
 
 let palabras: string[];
 let rng: () => number;
@@ -21,8 +22,9 @@ if (wordParam !== null) {
 }
 
 const vidas = vidasDeNivel(nivelParam ?? "normal");
+const pista = pistaParam ?? "";
 
 const root = document.getElementById("app");
 if (root) {
-  mountApp(root, new Sesion(palabras, rng, vidas));
+  mountApp(root, new Sesion(palabras, rng, vidas, pista));
 }
