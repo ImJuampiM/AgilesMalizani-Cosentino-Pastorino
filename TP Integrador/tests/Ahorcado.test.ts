@@ -11,6 +11,11 @@ it("una partida nueva empieza con 6 vidas", () => {
   expect(juego.vidasRestantes()).toBe(6);
 });
 
+it("un ahorcado puede arrancar con una cantidad de vidas configurable", () => {
+  const juego = new Ahorcado("GATO", 4);
+  expect(juego.vidasRestantes()).toBe(4);
+});
+
 it("adivinar una letra presente revela todas sus ocurrencias", () => {
   const juego = new Ahorcado("ALA");
   juego.adivinar("A");
