@@ -168,3 +168,15 @@ UTs (`esPalabraValida(texto: string)`):
 - una palabra con numeros o simbolos es invalida
 - una palabra con acentos o enie es valida
 
+## Mejora de UI — Controles en pantalla
+
+> Las features que antes sólo se activaban por la URL ahora son botones
+> visibles. Los seams de URL se conservan (los usan los ATs). No agrega lógica
+> de dominio: reutiliza `vidasDeNivel`, `Sesion.nuevaPartida()` y `mountSetup`.
+
+ATs (sin UTs nuevos):
+
+- el jugador elige el nivel difícil desde la UI (botones Fácil/Normal/Difícil)
+- el jugador entra al modo dos jugadores desde la UI (botón "2 jugadores")
+- el jugador pide una palabra nueva desde la UI (botón "Nueva palabra")
+

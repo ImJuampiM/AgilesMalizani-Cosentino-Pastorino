@@ -522,3 +522,15 @@ CI del TP funcionando. Deploy a Pages montado y a la espera de habilitar Pages
 
 **Estado al cierre de la F9:** 42 unit tests y 22 acceptance tests en verde. Novena feature de Aprobación Directa (Dos jugadores) completa. **Catálogo de features de la guía agotado (F1–F9).**
 
+### Mejora de UI — Controles en pantalla
+
+> Las features estaban escondidas detrás de parámetros de URL. Se exponen como
+> botones visibles (dificultad, "Nueva palabra", "2 jugadores") sin quitar los
+> seams de URL (los usan los ATs). Comportamiento → se hace con doble loop (AT).
+> No agrega lógica de dominio.
+
+- **[RED]** Acceptance Test "Controles en pantalla" (3 escenarios): elegir "Difícil" desde la UI → 4 vidas; "2 jugadores" → pantalla del jugador 1; "Nueva palabra" → palabra en limpio. Fallan porque no existen los controles. Los 22 ATs anteriores siguen en verde. (`4320ec7`)
+- **[GREEN]** `mountApp` agrega un panel de controles: botones de nivel (resalta el activo) que llaman a `acciones.nuevoNivel`, botón "Nueva palabra" (`sesion.nuevaPartida()`) y botón "2 jugadores" (`acciones.modoDosJugadores`). `index.ts` provee esas acciones reconstruyendo la `Sesion` con la config nueva y enruta al setup. Estilos del panel (control segmentado de dificultad). 25 acceptance tests en verde, cobertura 100% en `src/`. Verificado en navegador real. (`b5db70d`)
+
+**Estado al cierre del ciclo de controles:** 42 unit tests y 25 acceptance tests en verde. Todas las features accesibles desde botones en la UI (además de los seams de URL).
+
