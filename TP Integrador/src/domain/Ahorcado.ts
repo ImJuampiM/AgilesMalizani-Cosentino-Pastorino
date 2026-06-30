@@ -4,10 +4,19 @@ export class Ahorcado {
 
   constructor(private readonly palabra: string) {}
 
+  private quitarAcentos(texto: string): string {
+    return texto
+      .replace(/Á/g, "A")
+      .replace(/É/g, "E")
+      .replace(/Í/g, "I")
+      .replace(/Ó/g, "O")
+      .replace(/Ú/g, "U");
+  }
+
   palabraEnmascarada(): string {
     return this.palabra
       .split("")
-      .map((letra) => (this.adivinadas.has(letra.toUpperCase()) ? letra : "_"))
+      .map((letra) => (this.adivinadas.has(this.quitarAcentos(letra.toUpperCase())) ? letra : "_"))
       .join(" ");
   }
 
@@ -23,7 +32,7 @@ export class Ahorcado {
     if (this.estaGanada() || this.estaPerdida()) {
       return "terminada";
     }
-    const normalizada = letra.toUpperCase();
+    const normalizada = this.quitarAcentos(letra.toUpperCase());
     if (!/^[A-ZÑ]$/.test(normalizada)) {
       return "invalida";
     }
@@ -31,7 +40,7 @@ export class Ahorcado {
       return "repetida";
     }
     this.adivinadas.add(normalizada);
-    if (!this.palabra.toUpperCase().includes(normalizada)) {
+    if (!this.quitarAcentos(this.palabra.toUpperCase()).includes(normalizada)) {
       this.fallos++;
     }
     return "";
@@ -41,7 +50,7 @@ export class Ahorcado {
     return this.palabra
       .toUpperCase()
       .split("")
-      .every((letra) => this.adivinadas.has(letra));
+      .every((letra) => this.adivinadas.has(this.quitarAcentos(letra)));
   }
 
   estaPerdida(): boolean {
