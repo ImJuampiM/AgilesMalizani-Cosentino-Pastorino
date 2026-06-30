@@ -1,5 +1,7 @@
 import { Sesion } from "../domain/Sesion";
 
+const LETRAS = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split("");
+
 export function mountApp(root: HTMLElement, sesion: Sesion): void {
   let mensajeAviso = "";
 
@@ -20,6 +22,12 @@ export function mountApp(root: HTMLElement, sesion: Sesion): void {
       ? `<button data-testid="play-again">Jugar de nuevo</button>`
       : "";
 
+    const teclado = LETRAS.map((letra) => {
+      const usada = juego.letrasUsadas().includes(letra);
+      const deshabilitada = usada || terminada;
+      return `<button class="tecla" data-tecla="${letra}"${deshabilitada ? " disabled" : ""}>${letra}</button>`;
+    }).join("");
+
     root.innerHTML = `
       <div data-testid="scoreboard">Ganadas: ${sesion.ganadas()} - Perdidas: ${sesion.perdidas()}</div>
       <div data-testid="hangman">${juego.partesVisibles().join(", ")}</div>
@@ -27,24 +35,35 @@ export function mountApp(root: HTMLElement, sesion: Sesion): void {
       <div data-testid="lives">${juego.vidasRestantes()}</div>
       <div data-testid="used-keys">${juego.letrasUsadas().join(", ")}</div>
       <input type="text" />
+      <div class="teclado">${teclado}</div>
       ${botonJugarDeNuevo}
       ${mensaje}
     `;
+
+    function jugar(valor: string): void {
+      const letra = valor.toUpperCase();
+      const resultado = juego.adivinar(valor);
+      if (resultado === "repetida") {
+        mensajeAviso = `Ya intentaste la letra ${letra}`;
+      } else if (resultado === "invalida") {
+        mensajeAviso = "Entrada no válida";
+      } else {
+        mensajeAviso = "";
+      }
+      render();
+    }
+
     const input = root.querySelector("input")!;
     input.addEventListener("keydown", (evento) => {
       if (evento.key === "Enter") {
-        const valor = input.value.toUpperCase();
-        const resultado = juego.adivinar(input.value);
-        if (resultado === "repetida") {
-          mensajeAviso = `Ya intentaste la letra ${valor}`;
-        } else if (resultado === "invalida") {
-          mensajeAviso = "Entrada no válida";
-        } else {
-          mensajeAviso = "";
-        }
-        render();
+        jugar(input.value);
       }
     });
+
+    root.querySelectorAll<HTMLButtonElement>("[data-tecla]").forEach((boton) => {
+      boton.addEventListener("click", () => jugar(boton.dataset.tecla!));
+    });
+
     const botonReinicio = root.querySelector<HTMLButtonElement>('[data-testid="play-again"]');
     botonReinicio?.addEventListener("click", () => {
       sesion.nuevaPartida();
