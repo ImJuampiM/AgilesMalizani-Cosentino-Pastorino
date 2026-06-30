@@ -126,4 +126,9 @@ it("partesVisibles devuelve las 6 partes con 6 errores", () => {
   ]);
 });
 
+it("una partida nueva no tiene letras usadas", () => {
+  const juego = new Ahorcado("GATO");
+  expect(juego.letrasUsadas()).toEqual([]);
+});
+
 

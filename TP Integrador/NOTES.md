@@ -71,3 +71,15 @@ UTs (`Ahorcado.partesVisibles()`):
 - partesVisibles devuelve "cabeza" con 1 error
 - partesVisibles devuelve las 6 partes con 6 errores
 
+## Aprobación Directa — Feature 3: Teclado en pantalla
+
+> El dominio expone `letrasUsadas(): string[]` con las letras ya intentadas (en
+> mayúsculas, en orden de intento), para que la UI marque cuáles no están
+> disponibles. La UI solo renderiza.
+
+UTs (`Ahorcado.letrasUsadas()`):
+
+- una partida nueva no tiene letras usadas (devuelve un array vacío)
+- adivinar una letra la agrega a las letras usadas
+- las letras usadas incluyen aciertos y fallos en orden de intento
+
