@@ -462,3 +462,21 @@ CI del TP funcionando. Deploy a Pages montado y a la espera de habilitar Pages
 
 **Estado al cierre de la F6:** 30 unit tests y 16 acceptance tests en verde. Sexta feature de Aprobación Directa (Marcador de la sesión) completa.
 
+### Aprobación Directa — Feature 7: Niveles de dificultad
+
+> El nivel define las vidas iniciales (fácil 8 / normal 6 / difícil 4). Seam de
+> UI `?nivel=`. Lógica: `Ahorcado` toma las vidas por constructor,
+> `vidasDeNivel()` mapea nivel→vidas, `Sesion` las propaga a cada partida.
+
+- **[RED]** Acceptance Test "Niveles de dificultad" (2 escenarios): con `?nivel=dificil` se ven 4 vidas y con `?nivel=facil` 8. Fallan porque la app ignora el nivel (siempre 6). Los 16 ATs anteriores siguen en verde. (`91d6276`)
+- **[RED]** Unit Test: un ahorcado puede arrancar con una cantidad de vidas configurable (`new Ahorcado("GATO", 4)`). Falla (devuelve 6). (`dd356cb`)
+- **[GREEN]** `Ahorcado` toma `vidas` por constructor (default 6) y `vidasRestantes()` usa ese valor. 31 unit tests en verde. (`8dc68f6`)
+- **[RED]** Unit Test: el nivel dificil arranca con 4 vidas. Falla porque el módulo `niveles` no existe. (`c6dadd6`)
+- **[GREEN]** Se crea `src/domain/niveles.ts` con `vidasDeNivel(nivel)` y la tabla de niveles. 32 unit tests en verde. (`e3f5b10`)
+- **[TEST]** Se documenta el resto de la tabla: facil→8 y nivel desconocido→6 (normal). Ya quedan en verde y cubren la rama por defecto. 34 unit tests en verde. (`84e6331`)
+- **[RED]** Unit Test: una sesion creada con N vidas arranca la partida con N vidas. Falla (devuelve 6). (`d9dfc29`)
+- **[GREEN]** `Sesion` acepta `vidas` (default 6) y se las pasa a la partida en curso y a las de `nuevaPartida()`. 35 unit tests en verde. (`4a8b3e0`)
+- **[GREEN]** Acceptance Test "Niveles de dificultad" en verde: `index.ts` lee `?nivel=` y traduce a vidas con `vidasDeNivel`. 18 acceptance tests en verde, cobertura 100% en `src/`. (`5378052`)
+
+**Estado al cierre de la F7:** 35 unit tests y 18 acceptance tests en verde. Séptima feature de Aprobación Directa (Niveles de dificultad) completa.
+

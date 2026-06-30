@@ -118,3 +118,18 @@ UTs (`Sesion.ganadas()` / `Sesion.perdidas()`):
 - ganar una partida y empezar otra suma una ganada al marcador
 - perder una partida y empezar otra suma una perdida al marcador
 
+## Aprobación Directa — Feature 7: Niveles de dificultad
+
+> El nivel define la cantidad de vidas iniciales (fácil 8 / normal 6 / difícil
+> 4). `Ahorcado` acepta las vidas por constructor, `vidasDeNivel(nivel)` mapea
+> el nombre del nivel a su cantidad de vidas, y `Sesion` propaga esas vidas a
+> cada partida. Seam de UI: `?nivel=` en la URL.
+
+UTs (`Ahorcado`, `vidasDeNivel(nivel)`, `Sesion`):
+
+- un ahorcado puede arrancar con una cantidad de vidas configurable
+- el nivel dificil arranca con 4 vidas
+- el nivel facil arranca con 8 vidas
+- un nivel desconocido cae en las 6 vidas del nivel normal
+- una sesion creada con una cantidad de vidas arranca la partida con esas vidas
+
