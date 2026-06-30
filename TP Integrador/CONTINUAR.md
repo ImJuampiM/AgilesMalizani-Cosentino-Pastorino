@@ -46,11 +46,14 @@ Resumen del modelo mental:
 - **AT 3 y AT 4:** todos los tests los hizo **Malizani** (`JuanPabloMalizani`).
 - **AT 5 y AT 6:** los hizo **Pastorino** (`Juan Jose Pastorino`).
 - **AT 7:** lo hizo **Cosentino** (`lucio`).
+- **Aprobación Directa — Feature 1 (Palabra al azar):** la hizo **Malizani**
+  (`JuanPabloMalizani`).
 
 Los tres integrantes tienen participación en el TP. La escalera de 7 ATs de
-la guía está **completa**. Si el grupo encara el desafío de Aprobación
-Directa (§10), conviene que **arranquen Malizani o Pastorino** la primera
-feature nueva, para reequilibrar la rotación (Cosentino hizo AT 1, 2 y 7).
+la guía está **completa** y arrancó el desafío de Aprobación Directa (§10) con
+la primera feature (Palabra al azar, autor Malizani). Para la **próxima**
+feature nueva conviene que arranque **Pastorino** (lleva AT 5 y 6), para
+reequilibrar la rotación (Cosentino: AT 1, 2 y 7; Malizani: AT 3, 4 y F1).
 
 Que cada integrante fije **una sola** identidad de git consistente antes de
 commitear para no ensuciar `git shortlog -sne`.
@@ -59,6 +62,9 @@ commitear para no ensuciar `git shortlog -sne`.
 
 TypeScript + Vite (dev server) + Vitest (UT) + Playwright + playwright-bdd
 (AT en Gherkin contra el navegador real, vía Chromium headless).
+
+> **Requiere Node 22 LTS o superior** (la toolchain de rolldown rompe con Node
+> 21 o inferior — ver Troubleshooting §8).
 
 ```bash
 cd "TP Integrador"
@@ -86,11 +92,13 @@ TP Integrador/
   src/
     domain/
       Ahorcado.ts             ← TODA la lógica de negocio, sin DOM (código abajo)
+      elegirPalabra.ts        ← elige palabra de una lista con un rng inyectable (Aprobación Directa F1)
     ui/
       main.ts                 ← mountApp(root, juego): pinta word/lives/input/mensaje
-      index.ts                ← arranque: lee ?word= de la URL (default "GATO")
+      index.ts                ← arranque: ?word= o, si no, palabra al azar de la lista (?seed= determinista)
   tests/
     Ahorcado.test.ts          ← 13 unit tests, todos en verde (ver abajo)
+    elegirPalabra.test.ts     ← 2 unit tests del selector de palabra al azar
   features/
     iniciar-partida.feature
     acertar-letra.feature
@@ -99,8 +107,9 @@ TP Integrador/
     perder-partida.feature
     letra-repetida.feature
     entrada-invalida.feature  ← 2 escenarios (no-letra / partida terminada)
+    palabra-al-azar.feature   ← Aprobación Directa F1: sin ?word= toma una de la lista
     steps/
-      ahorcado.steps.ts       ← 5 steps reutilizables (Given/When/Then)
+      ahorcado.steps.ts       ← 6 steps reutilizables (Given/When/Then)
 ```
 
 Carpetas generadas, **no** versionadas (`.gitignore`): `node_modules/`,
@@ -160,6 +169,18 @@ export class Ahorcado {
   }
 }
 ```
+
+Módulo de dominio de Aprobación Directa F1 (`src/domain/elegirPalabra.ts`):
+
+```ts
+export function elegirPalabra(lista: string[], rng: () => number): string {
+  return lista[Math.floor(rng() * lista.length)];
+}
+```
+
+El `rng` se inyecta por parámetro (no se usa `Math.random` dentro del dominio)
+para poder testear determinista con un rng falso. La lista de palabras y la
+fuente real de azar viven en el composition root (`index.ts`), no en el dominio.
 
 **Notas sobre el estado del dominio:**
 
@@ -225,20 +246,40 @@ export function mountApp(root: HTMLElement, juego: Ahorcado): void {
 }
 ```
 
-`src/ui/index.ts` (arranque / composition root, sin cambios):
+`src/ui/index.ts` (arranque / composition root — actualizado en F1 para la
+palabra al azar):
 
 ```ts
 import { Ahorcado } from "../domain/Ahorcado";
+import { elegirPalabra } from "../domain/elegirPalabra";
 import { mountApp } from "./main";
 
+const PALABRAS = ["PERRO", "CABALLO", "ELEFANTE", "TIGRE", "LEON"];
+
 const params = new URLSearchParams(window.location.search);
-const palabra = params.get("word") ?? "GATO";
+const wordParam = params.get("word");
+const seedParam = params.get("seed");
+
+let palabra: string;
+if (wordParam !== null) {
+  palabra = wordParam;
+} else {
+  const rng =
+    seedParam !== null ? () => Number(seedParam) / PALABRAS.length : Math.random;
+  palabra = elegirPalabra(PALABRAS, rng);
+}
 
 const root = document.getElementById("app");
 if (root) {
   mountApp(root, new Ahorcado(palabra));
 }
 ```
+
+Seams de la URL: `?word=GATO` fuerza la palabra (back-compat, lo usan los 8 AT
+de la escalera base); sin `?word=` el juego elige al azar de `PALABRAS`;
+`?seed=N` arma un rng determinista (`N / longitud`) para que el AT pueda
+asertar una palabra concreta (seed 0 → primera de la lista, "PERRO"). Sin seed
+y sin word, usa `Math.random`.
 
 La UI maneja los mensajes posibles: "GANASTE", "PERDISTE", "Ya intentaste la
 letra X" y "Entrada no válida". Al ganar o perder muestra la palabra
@@ -247,7 +288,7 @@ el `string` que devuelve `adivinar()` en un mensaje en pantalla.
 
 ## 6. Tests existentes (todos en verde)
 
-`tests/Ahorcado.test.ts` (Vitest, **13 tests**):
+`tests/Ahorcado.test.ts` + `tests/elegirPalabra.test.ts` (Vitest, **15 tests**):
 
 1. una partida nueva muestra la palabra enmascarada con guiones
 2. una partida nueva empieza con 6 vidas
@@ -262,8 +303,10 @@ el `string` que devuelve `adivinar()` en un mensaje en pantalla.
 11. adivinar una letra ya intentada devuelve "repetida"
 12. adivinar un caracter que no es una letra no descuenta vidas
 13. adivinar con la partida ya perdida no se procesa (no puede ganarse después)
+14. elegirPalabra con un rng que devuelve 0 elige la primera palabra de la lista
+15. elegirPalabra con un rng cercano a 1 elige la última palabra de la lista
 
-AT en `features/` (**7 features**, todos pasan con `npm run at` — 8 escenarios
+AT en `features/` (**8 features**, todos pasan con `npm run at` — 9 escenarios
 en total, porque `entrada-invalida` tiene 2):
 
 - `iniciar-partida.feature`: "GATO" → ve `_ _ _ _` y 6 vidas.
@@ -275,10 +318,13 @@ en total, porque `entrada-invalida` tiene 2):
 - `entrada-invalida.feature`: (1) adivina "3" → sigue en 6 vidas y "Entrada no
   válida"; (2) tras perder, completar las letras restantes sigue mostrando
   "PERDISTE" (no "GANASTE").
+- `palabra-al-azar.feature`: con `?seed=0` y sin `?word=` → ve `_ _ _ _ _`
+  (PERRO, primera de la lista) y 6 vidas.
 
-`features/steps/ahorcado.steps.ts` define y reutiliza **5 steps**:
+`features/steps/ahorcado.steps.ts` define y reutiliza **6 steps**:
 
 - `Dado una partida con la palabra {string}` → `page.goto(/?word=...)`
+- `Dado una partida al azar con la semilla {int}` → `page.goto(/?seed=...)`
 - `Cuando el jugador adivina la letra {string}` → `fill` + `press('Enter')`
 - `Entonces se ve la palabra {string}` → `getByTestId('word')`
 - `Entonces se ven {int} vidas` → `getByTestId('lives')`
@@ -351,6 +397,14 @@ git shortlog -sne                                # commits por autor (rotación)
 
 ## 8. Troubleshooting que ya pisamos
 
+- **Node 21 o inferior rompe la toolchain (`util.styleText`):** con Node 21.7.1
+  (no-LTS, EOL) tanto `npm run test` como `npm run at` crashean al cargar
+  rolldown con `TypeError [ERR_INVALID_ARG_VALUE]: ... styleText` sobre
+  `["underline","gray"]`. El soporte de arrays de formato en `styleText` recién
+  llegó en **Node 22+**. **Fix:** instalar Node 22 LTS o superior (en la sesión
+  5 se instaló Node 24.18.0 con `winget install OpenJS.NodeJS.LTS`; abrir una
+  terminal nueva y verificar `node --version`). Es un problema de la máquina, no
+  del código del TP — el lock compartido corre bien en Node 22+.
 - **Máquina nueva con Windows — `npm run at` no arranca el dev server:** al
   correr por primera vez en una máquina Windows, Vite/rolldown puede crashear
   con `Cannot find native binding ... @rolldown/binding-win32-x64-msvc`. Es
@@ -386,20 +440,25 @@ git shortlog -sne                                # commits por autor (rotación)
 
 **Los 7 ATs de la guía están completos y en verde.** El juego del Ahorcado
 está funcionalmente terminado según la consigna base. Lo que sigue (§10) es
-**opcional**: el desafío de Aprobación Directa.
+**opcional**: el desafío de Aprobación Directa, **ya iniciado** (Feature 1 —
+Palabra al azar — completa y en verde).
 
 ## 10. Cómo seguir — Desafío de Aprobación Directa (opcional)
 
 La §9 de `GUIA-ATDD-IA-Ahorcado.md` propone, para Aprobación Directa, elegir
 **al menos 4 features nuevas** y construirlas con el mismo proceso (AT en
 rojo honesto → UTs sobre el dominio → verde → mirar la app), apuntando a
-~100% de cobertura en `src/domain/`. Ideas de la guía (con dónde vive la
-lógica testeable):
+~100% de cobertura en `src/domain/`.
+
+> **Avance:** Feature 1 (**Palabra al azar**) ✅ completa y en verde (autor
+> Malizani). Faltan **al menos 3 features más** para cerrar el desafío.
+
+Ideas de la guía (con dónde vive la lógica testeable):
 
 | Feature | Lógica de dominio a cubrir con UTs |
 |---|---|
+| ~~Palabra al azar de una lista~~ ✅ hecha | elegir palabra; **seam** para inyectar el azar y testear determinista |
 | Dibujo progresivo del ahorcado | qué partes del muñeco se muestran según los errores (0→6) |
-| Palabra al azar de una lista | elegir palabra; **seam** para inyectar el azar y testear determinista |
 | Soporte de acentos y ñ | normalizar: `á` == `a`, tratar la `ñ` (caso borde de "100% ≠ 0 bugs") |
 | Teclado en pantalla | marcar letras ya usadas (acertadas/falladas) como no disponibles |
 | Niveles de dificultad | cantidad de vidas y/o longitud de palabra según el nivel |
@@ -414,8 +473,8 @@ seam para el azar, la lección de testabilidad más transferible) y
 
 ### El ciclo es idéntico al de los ATs ya hechos:
 
-1. **Decidir la feature y quién la arranca** (rotar: ahora deberían arrancar
-   Malizani o Pastorino — ver §1.bis). Fijar su identidad de git.
+1. **Decidir la feature y quién la arranca** (rotar: la próxima debería
+   arrancarla **Pastorino** — ver §1.bis). Fijar su identidad de git.
 2. **Escribir el AT** (`features/<nombre>.feature`) → `npm run at` → ver el
    **rojo honesto** → commit `RED:` antes de tocar producción.
 3. **Enumerar los UTs** del dominio en `NOTES.md` antes de codear.
@@ -426,20 +485,20 @@ seam para el azar, la lección de testabilidad más transferible) y
 6. `npm run at` verde → **mirar la app** (`npm run dev`) → commit `GREEN:`
    del AT → actualizar `NOTES.md` y `BITACORA.md` → **push** (solo en verde).
 
-### Detalle útil para "Palabra al azar" (la más recomendada):
+### "Palabra al azar" (F1) — YA IMPLEMENTADA, como referencia de patrón:
 
-El `?word=` de la URL ya es el seam de la palabra. Para el azar, inyectar la
-fuente de aleatoriedad por constructor (p. ej. `new Ahorcado(palabra)` vs un
-selector `elegirPalabra(lista, rng)` donde `rng` es inyectable) para poder
-testear determinista pasando un `rng` falso. No hardcodear `Math.random()`
-dentro del dominio.
+Quedó resuelta con el seam de azar inyectable: `elegirPalabra(lista, rng)` en
+el dominio (sin `Math.random` adentro) y la fuente real de azar en el
+composition root (`index.ts`). Para el AT determinista se expuso `?seed=` en la
+URL (mismo espíritu que `?word=`). **Usar este patrón como molde** para las
+features nuevas que necesiten azar/efectos: la lógica testeable en un módulo de
+dominio con sus dependencias inyectadas, y la UI/composition root solo cablea.
 
-### Si NO encaran Aprobación Directa:
+### Estado de verificación actual / antes de la defensa:
 
-El TP base está entregable tal cual. Verificar antes de la defensa:
-`npm run test` (13 verdes), `npm run at` (8 escenarios verdes),
+`npm run test` (**15 verdes**), `npm run at` (**9 escenarios verdes**),
 `git log --oneline` (alternancia RED:/GREEN:) y `git shortlog -sne`
-(rotación entre los 3 integrantes).
+(rotación entre los 3 integrantes). Recordar: **Node 22+** (ver §8).
 
 ## 11. Reglas a no romper (de la guía, no negociables)
 
