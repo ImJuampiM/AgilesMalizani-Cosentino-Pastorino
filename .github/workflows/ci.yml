@@ -44,8 +44,11 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Typecheck (analisis estatico)
+      - name: Typecheck (validacion de tipos)
         run: npm run typecheck
+
+      - name: Analisis estatico - ESLint (quality gate)
+        run: npm run lint
 
       - name: Unit tests + coverage (Vitest)
         run: npm run coverage
