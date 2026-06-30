@@ -447,3 +447,18 @@ CI del TP funcionando. Deploy a Pages montado y a la espera de habilitar Pages
 
 **Estado tras integrar ESLint:** pipeline = build → typecheck → **ESLint (gate)** → unit+coverage (100%) → AT (14) → deploy. Con esto se cubre la única etapa que faltaba para aprobar según la corrección.
 
+### Aprobación Directa — Feature 6: Marcador de la sesión
+
+> `Sesion` cuenta partidas ganadas/perdidas en memoria; al empezar una nueva
+> partida archiva el resultado de la saliente. La UI muestra el marcador.
+
+- **[RED]** Acceptance Test "Marcador de la sesión" (2 escenarios): tras ganar/perder y presionar "Jugar de nuevo" se debe ver "Ganadas: 1 - Perdidas: 0" / "Ganadas: 0 - Perdidas: 1". Fallan porque no existe el marcador (`scoreboard`). Los 14 ATs anteriores siguen en verde. (`73146c2`)
+- **[RED]** Unit Test: una sesion nueva tiene el marcador en cero. Falla porque `ganadas()`/`perdidas()` no existen. (`452cd03`)
+- **[GREEN]** `Sesion` expone `ganadas()` y `perdidas()` arrancando en cero. 28 unit tests en verde. (`92aa29b`)
+- **[RED]** Unit Test: ganar una partida y empezar otra suma una ganada al marcador. Falla (sigue en 0). (`d5126a2`)
+- **[GREEN]** `nuevaPartida()` archiva el resultado de la partida saliente (suma a ganadas/perdidas según corresponda). 29 unit tests en verde. (`bf6dd8c`)
+- **[TEST]** Se documenta el caso simétrico "perder y empezar otra suma una perdida": ya queda en verde porque el archivado cubre ambas ramas. 30 unit tests en verde. (`40c6b77`)
+- **[GREEN]** Acceptance Test "Marcador de la sesión" en verde: la UI agrega `<div data-testid="scoreboard">`. 16 acceptance tests en verde, cobertura 100% en `src/`. (`d73bef7`)
+
+**Estado al cierre de la F6:** 30 unit tests y 16 acceptance tests en verde. Sexta feature de Aprobación Directa (Marcador de la sesión) completa.
+

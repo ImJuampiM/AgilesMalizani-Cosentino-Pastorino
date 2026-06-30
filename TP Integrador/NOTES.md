@@ -106,3 +106,15 @@ UTs (`Sesion(palabras: string[], rng: () => number)`):
 - una sesion nueva tiene una partida en curso con la palabra enmascarada y 6 vidas
 - nuevaPartida reemplaza la partida en curso por una en limpio
 
+## Aprobación Directa — Feature 6: Marcador de la sesión
+
+> `Sesion` lleva la cuenta de partidas ganadas/perdidas en memoria. Al empezar
+> una nueva partida (`nuevaPartida()`) archiva el resultado de la saliente. La
+> UI sólo muestra el marcador.
+
+UTs (`Sesion.ganadas()` / `Sesion.perdidas()`):
+
+- una sesion nueva tiene el marcador en cero
+- ganar una partida y empezar otra suma una ganada al marcador
+- perder una partida y empezar otra suma una perdida al marcador
+
