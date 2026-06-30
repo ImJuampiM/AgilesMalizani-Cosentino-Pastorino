@@ -133,3 +133,12 @@ UTs (`Ahorcado`, `vidasDeNivel(nivel)`, `Sesion`):
 - un nivel desconocido cae en las 6 vidas del nivel normal
 - una sesion creada con una cantidad de vidas arranca la partida con esas vidas
 
+## Mejora de UI — Teclado clickeable
+
+> Comportamiento nuevo de UI cubierto sólo por AT (no agrega lógica de dominio:
+> reutiliza `Ahorcado.adivinar()` y `letrasUsadas()`). El muñeco dibujado en SVG
+> y los estilos son presentación pura, sin tests propios.
+
+AT (sin UTs nuevos): hacer click en una tecla del teclado en pantalla adivina
+esa letra, igual que tipearla y presionar Enter.
+

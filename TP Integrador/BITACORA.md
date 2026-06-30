@@ -480,3 +480,16 @@ CI del TP funcionando. Deploy a Pages montado y a la espera de habilitar Pages
 
 **Estado al cierre de la F7:** 35 unit tests y 18 acceptance tests en verde. Séptima feature de Aprobación Directa (Niveles de dificultad) completa.
 
+### Ciclo de mejora de UI
+
+> Se mejora la presentación. El **teclado clickeable** es comportamiento nuevo,
+> así que se hace con doble loop (AT). El **muñeco dibujado** y los **estilos**
+> son presentación: van sin tests propios, pero todos los ATs siguen en verde
+> (no se toca el dominio ni se cambia ningún `data-testid`).
+
+- **[RED]** Acceptance Test "Teclado clickeable": con "GATO", al hacer click en la tecla "A" se debe ver "_ A _ _" y la letra usada "A". Falla porque no hay teclas en pantalla (el botón no existe). Los 18 ATs anteriores siguen en verde. (`669fbd6`)
+- **[GREEN]** `mountApp` renderiza un teclado A–Z + Ñ; cada tecla llama a `adivinar()` (misma lógica que Enter, extraída a `jugar()`), y se deshabilitan las letras ya usadas y todas al terminar. No se agrega lógica al dominio (reutiliza `adivinar()` y `letrasUsadas()`). 19 acceptance tests en verde. (`49f8312`)
+- **[UI]** Presentación: muñeco dibujado en **SVG** manejado por `partesVisibles().length` (se conserva el `data-testid="hangman"` de texto, ahora `sr-only`, para los ATs), hoja de estilos `styles.css` (tema oscuro, grilla del teclado, layout responsive) y `vite-env.d.ts` para que `tsc` acepte el import de CSS. Verificado en navegador real con captura. 19 acceptance tests en verde, typecheck/lint/cobertura (100%) OK. (`b15545b`)
+
+**Estado al cierre del ciclo de UI:** 35 unit tests y 19 acceptance tests en verde. Teclado en pantalla clickeable, muñeco dibujado y la app con estilos. **Resumen de la sesión 9:** ESLint (quality gate, lo que pedía la corrección) + F5 Jugar de nuevo + F6 Marcador + F7 Niveles + mejora de UI. **7 features de Aprobación Directa** en total (F1–F7).
+
