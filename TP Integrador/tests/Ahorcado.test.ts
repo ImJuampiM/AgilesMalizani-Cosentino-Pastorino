@@ -16,6 +16,11 @@ it("un ahorcado puede arrancar con una cantidad de vidas configurable", () => {
   expect(juego.vidasRestantes()).toBe(4);
 });
 
+it("un ahorcado expone la pista asociada a la palabra", () => {
+  const juego = new Ahorcado("GATO", 6, "Animal domestico");
+  expect(juego.pista()).toBe("Animal domestico");
+});
+
 it("adivinar una letra presente revela todas sus ocurrencias", () => {
   const juego = new Ahorcado("ALA");
   juego.adivinar("A");
