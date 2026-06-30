@@ -29,8 +29,14 @@ jobs:
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 
-      - name: Unit tests (Vitest)
-        run: npx vitest run
+      - name: Build
+        run: npm run build
+
+      - name: Typecheck (analisis estatico)
+        run: npm run typecheck
+
+      - name: Unit tests + coverage (Vitest)
+        run: npm run coverage
 
       - name: Acceptance tests (Playwright BDD)
         run: npm run at
