@@ -48,7 +48,16 @@ export class Ahorcado {
     return this.vidasRestantes() <= 0;
   }
 
+  private static readonly PARTES = [
+    "cabeza",
+    "cuerpo",
+    "brazo izquierdo",
+    "brazo derecho",
+    "pierna izquierda",
+    "pierna derecha",
+  ];
+
   partesVisibles(): string[] {
-    return [];
+    return Ahorcado.PARTES.slice(0, this.fallos);
   }
 }
