@@ -1,0 +1,17 @@
+import { Ahorcado } from "./Ahorcado";
+import { elegirPalabra } from "./elegirPalabra";
+
+export class Sesion {
+  private partida: Ahorcado;
+
+  constructor(
+    private readonly palabras: string[],
+    private readonly rng: () => number,
+  ) {
+    this.partida = new Ahorcado(elegirPalabra(palabras, rng));
+  }
+
+  partidaActual(): Ahorcado {
+    return this.partida;
+  }
+}
