@@ -59,6 +59,29 @@ body {
   align-items: start;
 }
 
+.tablero.setup {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.tablero.setup p {
+  margin: 0;
+  color: var(--tenue);
+}
+
+.tablero.setup [data-testid="start"] {
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  background: var(--acento);
+  color: #06283d;
+  cursor: pointer;
+}
+
 .muneco {
   width: 100%;
   stroke: var(--texto);
