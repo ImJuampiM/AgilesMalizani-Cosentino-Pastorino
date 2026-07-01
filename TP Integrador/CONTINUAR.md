@@ -14,7 +14,7 @@ donde quedó, sin tener que re-explicar nada.
 
 ---
 
-## 🟢 PROMPT DE HANDOFF — pegá esto para retomar (estado al HEAD 4498997)
+## 🟢 PROMPT DE HANDOFF — pegá esto para retomar (estado al HEAD 671755f)
 
 ```
 Continuamos el TP del Ahorcado en TypeScript con ATDD de doble loop
@@ -24,15 +24,18 @@ Continuamos el TP del Ahorcado en TypeScript con ATDD de doble loop
 ESTADO ACTUAL (todo verde y pusheado a origin/main, git limpio):
 
 • Escalera base de 7 ATs de la guía: COMPLETA.
-• Aprobación Directa: 9 features (F1–F9), catálogo de la guía agotado:
+• Aprobación Directa: 10 features (F1–F10). El catálogo de la guía (F1–F9)
+  quedó agotado y F10 es una feature extra fuera de catálogo:
   F1 Palabra al azar · F2 Dibujo progresivo · F3 Teclado en pantalla ·
   F4 Acentos y Ñ · F5 Jugar de nuevo (Sesion) · F6 Marcador de sesión ·
   F7 Niveles de dificultad (?nivel=) · F8 Pista (?pista=) ·
-  F9 Dos jugadores (?modo=duo, validarPalabra.ts + pantalla de setup).
-• UI: teclado clickeable, muñeco en SVG, estilos (tema oscuro) y PANEL DE
-  CONTROLES (botones de dificultad, "Nueva palabra", "2 jugadores"). Los
-  seams de URL se conservan porque los usan los ATs.
-• 42 unit tests (100% cobertura en src/) y 25 acceptance tests, todos en verde.
+  F9 Dos jugadores (?modo=duo, validarPalabra.ts + pantalla de setup) ·
+  F10 Temporizador por partida (?tiempo=, Cronometro.ts con seam de reloj
+  Date.now inyectable, mismo patrón que el rng de elegirPalabra).
+• UI: teclado clickeable, muñeco en SVG, estilos (tema oscuro), PANEL DE
+  CONTROLES (dificultad, "Nueva palabra", "2 jugadores") y el temporizador
+  "⏱️ N s". Los seams de URL se conservan porque los usan los ATs.
+• 45 unit tests (100% cobertura en src/) y 26 acceptance tests, todos en verde.
 • CI/CD: ci.yml = build → typecheck → ESLint (QUALITY GATE, --max-warnings 0,
   corta el build) → unit+coverage → AT → deploy a Pages. App online:
   https://imjuampim.github.io/AgilesMalizani-Cosentino-Pastorino/
@@ -41,27 +44,37 @@ CORRECCIÓN DEL PROFE (1ª versión):
 • Lo que BLOQUEABA (análisis estático con quality gate) YA ESTÁ RESUELTO con
   ESLint (el tsc quedó como validación de tipos, complementario). Verificar
   el run en Actions en verde.
-• PENDIENTE no bloqueante: rotación despareja (Lucio ~2/3 de los commits).
+• PENDIENTE no bloqueante: rotación despareja (Lucio ~2/3 de los commits). Se
+  está reequilibrando: F10 la arrancó Malizani. Falta que sume Pastorino.
+• Observación del profe (a otro grupo) sobre "varios UT por cada AT": en
+  nuestro repo se cumple (promedio ~2,6 UT/AT). Los únicos con 1 UT son AT3
+  (Fallar) y AT4 (Ganar); la justificación (TDD minimal: el resto ya estaba
+  cubierto por AT2) quedó escrita en NOTES.md, bajo esos AT.
 
 ANTES DE ARRANCAR:
-1. git pull.  2. Node 22 LTS o superior.
-3. Leé BITACORA.md (registro cronológico, AL DÍA).
-4. Verificá verde: cd "TP Integrador" && npm install && npm run test (42) &&
-   npm run at (25) && npm run lint (gate, exit 0) && npm run coverage (100%).
+1. git pull.  2. Node 22 LTS o superior (con Node 20.13 corren test y at igual,
+   pero el lint gate y el coverage local piden ≥20.19; en CI corre sobre 22).
+3. Leé BITACORA.md (registro cronológico, AL DÍA) y NOTES.md (UTs por AT).
+4. Verificá verde: cd "TP Integrador" && npm install && npm run test (45) &&
+   npm run at (26) && npm run lint (gate, exit 0) && npm run coverage (100%).
 
 TU TAREA (OBLIGATORIA — NO se cierra el TP todavía):
 • Tenés que AGREGAR AL MENOS UNA feature/mejora nueva más, con el proceso
   completo de doble loop (AT rojo → UTs → verde → mirar la app → docs → push).
   No vale "dar por cerrado" ni sólo refactorizar: hay que sumar algo nuevo.
-• Elegí UNA y arrancala (o proponé otra equivalente):
-  - Pistas/categorías por palabra en el modo al azar (map palabra→pista; hoy la
-    pista sólo entra por ?pista=).
-  - Racha de victorias consecutivas en el Marcador.
-  - Temporizador por partida (seam de reloj inyectable, como el de azar).
-  - Historial persistente del marcador (localStorage detrás de un seam).
-  - Definición/pista revelable con un botón "Ver pista".
-• ROTACIÓN: como Lucio está sobrecargado, ESTE trabajo lo arranca y commitea
-  Malizani o Pastorino (fijá tu identidad de git antes de commitear).
+• CANDIDATA CON VENTAJA — 2º ciclo del Temporizador (F10 hoy solo MUESTRA el
+  tiempo, no tictaquea ni termina la partida):
+  - AT "se acaba el tiempo y el jugador pierde" → fuerza Cronometro.expirado()
+    en el dominio (ROJO REAL, no documentación) + un tick (setInterval) en la
+    UI que re-renderiza y muestra "Se acabó el tiempo" / bloquea el juego.
+  - Para el AT determinista: usar ?tiempo=1 y que Playwright espere el estado
+    perdido (expect(...).toHaveText auto-espera), o exponer el seam del reloj.
+• OTRAS OPCIONES equivalentes: Racha de victorias en el Marcador · Historial
+  persistente del marcador (localStorage detrás de un seam) · Pista revelable
+  con botón "Ver pista".
+• ROTACIÓN: como Lucio está sobrecargado y Malizani ya hizo F10, ESTE trabajo
+  conviene que lo arranque y commitee PASTORINO (o Malizani). Fijá tu identidad
+  de git antes de commitear (git config user.name / user.email).
 
 REGLAS NO NEGOCIABLES:
 • No test, no code.  • Commit RED apenas falla el test, ANTES de tocar
