@@ -10,6 +10,6 @@ export class Cronometro {
 
   tiempoRestante(): number {
     const transcurridos = Math.floor((this.reloj() - this.inicio) / 1000);
-    return this.limiteSegundos - transcurridos;
+    return Math.max(0, this.limiteSegundos - transcurridos);
   }
 }
