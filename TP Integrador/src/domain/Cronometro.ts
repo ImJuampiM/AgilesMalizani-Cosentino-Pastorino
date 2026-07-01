@@ -1,10 +1,15 @@
 export class Cronometro {
+  private readonly inicio: number;
+
   constructor(
     private readonly limiteSegundos: number,
     private readonly reloj: () => number,
-  ) {}
+  ) {
+    this.inicio = reloj();
+  }
 
   tiempoRestante(): number {
-    return this.limiteSegundos;
+    const transcurridos = Math.floor((this.reloj() - this.inicio) / 1000);
+    return this.limiteSegundos - transcurridos;
   }
 }
