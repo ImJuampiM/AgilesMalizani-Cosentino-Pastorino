@@ -534,3 +534,55 @@ CI del TP funcionando. Deploy a Pages montado y a la espera de habilitar Pages
 
 **Estado al cierre del ciclo de controles:** 42 unit tests y 25 acceptance tests en verde. Todas las features accesibles desde botones en la UI (además de los seams de URL).
 
+---
+
+## Sesión 10 — 30/06/2026 (autor: JuanPabloMalizani / Malizani)
+
+> Feature nueva pedida por el handoff (no se cierra el TP sólo con el catálogo
+> de la guía). Arranca Malizani para reequilibrar la rotación (Lucio concentraba
+> ~2/3 de los commits). Entorno verificado al inicio: `git pull` al día (HEAD
+> `37d4636`, en sync con origin/main), 42 UT y 25 AT en verde antes de tocar
+> nada. Node local v20.13.1 (Vitest y Playwright corren igual; sólo el warning
+> de versión de Vite — el CI usa Node 22).
+
+### Aprobación Directa — Feature 10: Temporizador por partida
+
+> Cada partida tiene un límite de tiempo. Seam del reloj: el dominio no conoce
+> `Date.now`; `Cronometro(limiteSegundos, reloj)` recibe el `reloj: () => number`
+> por parámetro (mismo patrón que el `rng` de `elegirPalabra`) para testear
+> determinista con un reloj falso. En producción se inyecta `Date.now`; el AT usa
+> el seam de UI `?tiempo=`. La UI sólo lee `cronometro.tiempoRestante()`.
+
+- **[RED]** Acceptance Test "Temporizador por partida": con `?word=GATO&tiempo=30`
+  se debe ver el tiempo restante "30" (`data-testid="timer"`). Falla porque el
+  elemento del temporizador no existe en el DOM (la app aún no lee `?tiempo=`).
+  Los 25 ATs anteriores siguen en verde. Rojo honesto confirmado antes de tocar
+  producción. (`b143ac0`)
+- **[RED]** Unit Test: un cronómetro nuevo tiene todo el tiempo restante
+  disponible (con un reloj fijo, `tiempoRestante()` devuelve el límite). Falla al
+  importar: el módulo `src/domain/Cronometro` no existe. Los 42 UT anteriores
+  siguen en verde. (`38cdfd8`)
+- **[GREEN]** `Cronometro.tiempoRestante()` devuelve el límite (mínimo código;
+  el reloj se recibe pero todavía no se usa). 43 UT en verde. (`8814f40`)
+- **[RED]** Unit Test: el tiempo restante baja según los segundos transcurridos
+  (reloj que avanza 5s → `tiempoRestante()` 25). Falla: esperaba 25, recibió 30.
+  Fuerza a usar el reloj. Los 43 UT anteriores siguen en verde. (`3200534`)
+- **[GREEN]** `tiempoRestante()` guarda el instante de inicio y descuenta los
+  segundos transcurridos: `limite - floor((reloj() - inicio) / 1000)`. 44 UT en
+  verde. (`954b357`)
+- **[RED]** Unit Test: el tiempo restante no baja de cero cuando se pasa del
+  límite (reloj que avanza 40s con límite 30 → 0). Falla: esperaba 0, recibió
+  -10. Los 44 UT anteriores siguen en verde. (`fdb3353`)
+- **[GREEN]** `tiempoRestante()` se acota con `Math.max(0, ...)`. 45 UT en verde.
+  (`a777558`)
+- **[GREEN]** Acceptance Test "Temporizador por partida" en verde: `index.ts` lee
+  `?tiempo=` y arma un `Cronometro` inyectándole `Date.now`; `main.ts` muestra
+  `<span data-testid="timer">` con `cronometro.tiempoRestante()` (sólo si hay
+  cronómetro, para no afectar a los 25 AT previos). 26 acceptance tests en verde,
+  typecheck OK. Verificado en navegador real (Chromium): se ve "⏱️ 30 s". AT
+  temporizador completo. (`47858e7`)
+
+**Estado al cierre de la F10:** 45 unit tests y 26 acceptance tests en verde.
+Décima feature de Aprobación Directa (Temporizador por partida) completa. La
+arrancó Malizani, aportando al reequilibrio de la rotación.
+

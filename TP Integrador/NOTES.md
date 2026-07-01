@@ -180,3 +180,17 @@ ATs (sin UTs nuevos):
 - el jugador entra al modo dos jugadores desde la UI (botón "2 jugadores")
 - el jugador pide una palabra nueva desde la UI (botón "Nueva palabra")
 
+## Aprobación Directa — Feature 10: Temporizador por partida
+
+> Seam del reloj: el dominio no conoce `Date.now`. `Cronometro(limiteSegundos,
+> reloj)` recibe el `reloj: () => number` por parámetro (mismo patrón que el
+> `rng` de `elegirPalabra`) para testear determinista con un reloj falso. En
+> producción se inyecta `Date.now`; en los UT, una función que devuelve valores
+> controlados. Seam de UI: `?tiempo=` en la URL. La UI muestra el tiempo restante.
+
+UTs (`Cronometro(limiteSegundos: number, reloj: () => number)`):
+
+- un cronómetro nuevo tiene todo el tiempo restante disponible
+- el tiempo restante baja según los segundos transcurridos
+- el tiempo restante no baja de cero cuando se pasa del límite
+
