@@ -23,11 +23,28 @@ UTs:
 
 - fallar una letra descuenta una vida (`vidasRestantes()` baja de 6 a 5 al adivinar una letra ausente)
 
+> **Por qué un solo UT nuevo acá:** el comportamiento de "al fallar, la palabra
+> sigue enmascarada / no se revela ninguna letra" ya quedó cubierto por los UT
+> del AT 2 (`adivinar una letra presente revela todas sus ocurrencias`,
+> `adivinar es case-insensitive`). Escribir otro UT sobre eso sería testear
+> código ya verde. Por la regla "no test, no code / no duplicar cobertura", el
+> único comportamiento **nuevo** que el AT 3 fuerza es el descuento de vida, y
+> ese es el UT que se agregó. La acumulación de fallos (2 fallos → 2 vidas menos)
+> es la misma lógica de resta ya ejercitada, no código nuevo.
+
 ## AT 4 — Ganar
 
 UTs:
 
 - la partida esta ganada cuando se adivinan todas las letras (`estaGanada()` devuelve true)
+
+> **Por qué un solo UT nuevo acá:** `estaGanada()` es el único comportamiento de
+> dominio nuevo que el AT 4 exige. El caso "una partida recién empezada no está
+> ganada" es el estado inicial (`estaGanada()` arranca en `false` porque no hay
+> letras adivinadas) y no requiere código propio; queda implícito en que los AT
+> 1–3 corren sin mostrar "GANASTE". El caso "letras repetidas en la palabra"
+> (p. ej. OSO) usa el mismo `Set` de adivinadas ya cubierto por el AT 2. Por eso
+> el AT 4 agrega un único UT: el mínimo que fuerza la lógica nueva.
 
 ## AT 5 — Perder
 
