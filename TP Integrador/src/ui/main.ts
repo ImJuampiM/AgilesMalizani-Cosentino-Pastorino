@@ -1,4 +1,5 @@
 import { Sesion } from "../domain/Sesion";
+import { Cronometro } from "../domain/Cronometro";
 import "./styles.css";
 
 const LETRAS = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split("");
@@ -43,6 +44,7 @@ export function mountApp(
   sesion: Sesion,
   acciones: AccionesJuego,
   nivel = "normal",
+  cronometro?: Cronometro,
 ): void {
   let mensajeAviso = "";
 
@@ -94,6 +96,7 @@ export function mountApp(
           ${dibujarMuneco(juego.partesVisibles().length)}
           <div class="panel">
             <div class="vidas">❤️ <span data-testid="lives">${juego.vidasRestantes()}</span> vidas</div>
+            ${cronometro ? `<div class="tiempo">⏱️ <span data-testid="timer">${cronometro.tiempoRestante()}</span> s</div>` : ""}
             <div class="palabra" data-testid="word">${terminada ? juego.palabraRevelada() : juego.palabraEnmascarada()}</div>
             ${pista}
             <span class="sr-only" data-testid="hangman">${juego.partesVisibles().join(", ")}</span>

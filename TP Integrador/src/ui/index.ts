@@ -1,4 +1,5 @@
 import { Sesion } from "../domain/Sesion";
+import { Cronometro } from "../domain/Cronometro";
 import { vidasDeNivel } from "../domain/niveles";
 import { mountApp, AccionesJuego } from "./main";
 import { mountSetup } from "./setup";
@@ -38,6 +39,7 @@ const seedParam = params.get("seed");
 const nivelParam = params.get("nivel");
 const pistaParam = params.get("pista");
 const modoParam = params.get("modo");
+const tiempoParam = params.get("tiempo");
 
 const pista = pistaParam ?? "";
 const root = document.getElementById("app");
@@ -68,7 +70,10 @@ function montarJuego(palabras?: string[], rng?: () => number): void {
   if (!root) return;
   const origen = palabras && rng ? { palabras, rng } : fuente();
   const sesion = new Sesion(origen.palabras, origen.rng, vidasDeNivel(nivelActual), pista);
-  mountApp(root, sesion, acciones, nivelActual);
+  // Seam del reloj: en producción se inyecta Date.now; los UT usan un reloj falso.
+  const cronometro =
+    tiempoParam !== null ? new Cronometro(Number(tiempoParam), Date.now) : undefined;
+  mountApp(root, sesion, acciones, nivelActual, cronometro);
 }
 
 function montarSetup(): void {
