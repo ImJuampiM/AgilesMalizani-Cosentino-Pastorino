@@ -29,6 +29,13 @@ Given(
   },
 );
 
+Given(
+  "una partida con la palabra {string} y un límite de {int} segundos",
+  async ({ page }, palabra: string, segundos: number) => {
+    await page.goto(`/?word=${palabra}&tiempo=${segundos}`);
+  },
+);
+
 When("el jugador adivina la letra {string}", async ({ page }, letra: string) => {
   const input = page.getByRole("textbox");
   await input.fill(letra);
@@ -82,4 +89,8 @@ Then("se ve la pista {string}", async ({ page }, pista: string) => {
 
 Then("se ve la pantalla del jugador 1", async ({ page }) => {
   await expect(page.getByTestId("setup-word")).toBeVisible();
+});
+
+Then("se ve el tiempo restante {string}", async ({ page }, segundos: string) => {
+  await expect(page.getByTestId("timer")).toHaveText(segundos);
 });
