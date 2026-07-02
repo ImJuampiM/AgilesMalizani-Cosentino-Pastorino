@@ -77,3 +77,16 @@ it("ganar dos partidas seguidas y empezar otra sube la racha a 2", () => {
   sesion.nuevaPartida();
   expect(sesion.rachaActual()).toBe(2);
 });
+
+it("perder una partida despues de ganar resetea la racha a cero", () => {
+  const sesion = new Sesion(["SOL"], () => 0);
+  sesion.partidaActual().adivinar("S");
+  sesion.partidaActual().adivinar("O");
+  sesion.partidaActual().adivinar("L");
+  sesion.nuevaPartida(); // Racha = 1
+  for (const letra of ["B", "C", "D", "F", "G", "H"]) {
+    sesion.partidaActual().adivinar(letra);
+  }
+  sesion.nuevaPartida();
+  expect(sesion.rachaActual()).toBe(0);
+});
