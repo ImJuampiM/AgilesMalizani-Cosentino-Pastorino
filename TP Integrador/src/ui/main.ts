@@ -87,7 +87,7 @@ export function mountApp(
       <div class="ahorcado">
         <header class="barra">
           <h1>Ahorcado</h1>
-          <div class="marcador" data-testid="scoreboard">Ganadas: ${sesion.ganadas()} - Perdidas: ${sesion.perdidas()}</div>
+          <div class="marcador" data-testid="scoreboard">Ganadas: ${sesion.ganadas()} - Perdidas: ${sesion.perdidas()} | <span data-testid="streak">Racha: ${sesion.rachaActual()}</span></div>
         </header>
         <div class="controles">
           <div class="niveles" role="group" aria-label="Dificultad">${niveles}</div>
