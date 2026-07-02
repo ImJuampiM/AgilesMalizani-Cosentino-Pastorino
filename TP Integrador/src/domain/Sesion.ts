@@ -43,6 +43,13 @@ export class Sesion {
       this.vidas,
       this.pista,
     );
+    if (this.almacen) {
+      this.almacen.guardar({
+        ganadas: this.partidasGanadas,
+        perdidas: this.partidasPerdidas,
+        racha: this.rachaVictorias,
+      });
+    }
   }
 
   ganadas(): number {
