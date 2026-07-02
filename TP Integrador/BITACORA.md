@@ -628,3 +628,40 @@ arrancó Malizani, aportando al reequilibrio de la rotación.
 **Estado al cierre de la sesión 11:** 47 unit tests y 27 acceptance tests en
 verde. El temporizador ahora tictaquea en tiempo real y bloquea la partida
 cuando se agota el tiempo, completando el 2º ciclo de F10.
+
+### Sesión 12: Racha, Historial Persistente y Pista Revelable
+
+Se retoma el trabajo para implementar las últimas tres features de aprobación directa (F11, F12 y F13) siguiendo el proceso ATDD de doble loop, asegurando usar el correo `juanjosepastorino@gmail.com` en los commits.
+
+#### F11: Racha de Victorias (Consecutivas)
+> El marcador también muestra la cantidad de victorias consecutivas (racha). Al
+> perder, la racha vuelve a cero. El AT verifica que el texto de la racha
+> refleje el número (comportamiento de `Sesion`).
+
+- **22:25 — [RED]** Acceptance Test "El marcador muestra la racha de victorias consecutivas": se simulan dos victorias, la recarga del juego, y se busca que `data-testid="streak"` tenga el texto "Racha: 2". Falla porque el elemento no existe en la UI.
+- **22:28 — [RED]** Unit Test: "ganar una partida y empezar otra sube la racha a 1". Falla en `Sesion.test.ts` porque `rachaActual()` no existe.
+- **22:30 — [GREEN]** Se crea `rachaVictorias` en `Sesion` y se incrementa al ganar. Los tests iniciales pasan.
+- **22:32 — [RED]** Unit Test: "perder una partida despues de ganar resetea la racha a cero". Falla porque al perder no se resetea la racha.
+- **22:35 — [GREEN]** Se modifica `Sesion.nuevaPartida()` para hacer `this.rachaVictorias = 0` cuando `this.partida.estaPerdida()`. UT en verde.
+- **22:35 — [GREEN]** UI: Se modifica el marcador en `main.ts` para que incluya `| <span data-testid="streak">Racha: ${sesion.rachaActual()}</span>`. AT en verde.
+
+#### F12: Historial Persistente
+> El marcador (ganadas/perdidas/racha) se persiste en almacenamiento local a través
+> de un seam inyectable `Almacen`.
+
+- **22:36 — [RED]** Acceptance Test "El marcador sobrevive al recargar la pagina": tras adivinar una palabra y hacer clic en Jugar de nuevo, se recarga la página (`page.reload()`). Se espera "Ganadas: 1 - Perdidas: 0". Falla porque la memoria vuelve a cero al recargar.
+- **22:37 — [RED]** Unit Test: "una sesion nueva carga el marcador del almacen". Se le inyecta un mock que devuelve un estado cargado, pero `Sesion` lo ignora.
+- **22:37 — [GREEN]** Se crea la interfaz `Almacen` y se modifica el constructor de `Sesion` para cargar los valores si se le pasa el `almacen`. UT en verde.
+- **22:38 — [RED]** Unit Test: "nuevaPartida guarda el marcador actualizado en el almacen". Se inyecta un mock esperando que se llame `guardar()`. Falla porque no se llama.
+- **22:38 — [GREEN]** `Sesion.nuevaPartida()` llama a `this.almacen.guardar()`. UT en verde.
+- **22:39 — [GREEN]** Infraestructura: Se implementa `AlmacenLocalStorage` que usa `localStorage.getItem/setItem` e inyecta en `index.ts`. AT en verde.
+
+#### F13: Pista Revelable
+> La pista no se muestra al iniciar, se revela al presionar "Ver pista".
+
+- **22:41 — [RED]** Acceptance Test "La pista se muestra solo despues de presionar el boton": se espera que `data-testid="hint"` inicialmente no esté visible. Falla porque el div sí es visible de entrada.
+- **22:41 — [GREEN]** UI: Se agrega estado `pistaRevelada = false` en `main.ts`. Si es false y hay pista, se muestra `<button data-accion="ver-pista">Ver pista</button>`. Al hacer clic, `pistaRevelada = true` y se renderiza el div original de la pista. El AT nuevo pasa.
+- **22:42 — [RED]** Regresión de ATs previos: 4 tests fallaban (los de marcador, por el formato estricto viejo, y el de pista vieja porque no presionaba el botón).
+- **22:43 — [GREEN]** Se corrigen los ATs de marcador usando `.toContainText()` y se agrega el paso `Cuando el jugador presiona "Ver pista"` al AT de "Pista de la palabra" para respetar la nueva precondición. Toda la suite verde (30 ATs, 53 UTs). 0 lint errors tras una corrección de tipos.
+
+**Estado al cierre de la sesión 12:** 53 unit tests y 30 acceptance tests en verde. Cobertura al 100%. Las features F11, F12 y F13 han sido implementadas exitosamente con ATDD, manteniendo diseño limpio y sin deuda técnica.
