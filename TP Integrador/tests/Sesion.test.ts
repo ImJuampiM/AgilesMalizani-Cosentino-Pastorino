@@ -90,3 +90,14 @@ it("perder una partida despues de ganar resetea la racha a cero", () => {
   sesion.nuevaPartida();
   expect(sesion.rachaActual()).toBe(0);
 });
+
+it("una sesion nueva carga el marcador del almacen", () => {
+  const almacenFake = {
+    cargar: () => ({ ganadas: 5, perdidas: 2, racha: 3 }),
+    guardar: () => {},
+  };
+  const sesion = new Sesion(["GATO"], () => 0, 6, "", almacenFake);
+  expect(sesion.ganadas()).toBe(5);
+  expect(sesion.perdidas()).toBe(2);
+  expect(sesion.rachaActual()).toBe(3);
+});
