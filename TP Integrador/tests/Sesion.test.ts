@@ -101,3 +101,19 @@ it("una sesion nueva carga el marcador del almacen", () => {
   expect(sesion.perdidas()).toBe(2);
   expect(sesion.rachaActual()).toBe(3);
 });
+
+it("nuevaPartida guarda el marcador actualizado en el almacen", () => {
+  let guardado: any = null;
+  const almacenFake = {
+    cargar: () => null,
+    guardar: (datos: any) => { guardado = datos; },
+  };
+  const sesion = new Sesion(["GATO"], () => 0, 6, "", almacenFake);
+  sesion.partidaActual().adivinar("G");
+  sesion.partidaActual().adivinar("A");
+  sesion.partidaActual().adivinar("T");
+  sesion.partidaActual().adivinar("O");
+  sesion.nuevaPartida();
+  
+  expect(guardado).toEqual({ ganadas: 1, perdidas: 0, racha: 1 });
+});
