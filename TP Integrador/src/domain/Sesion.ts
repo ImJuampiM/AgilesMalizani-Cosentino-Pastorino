@@ -5,6 +5,7 @@ export class Sesion {
   private partida: Ahorcado;
   private partidasGanadas = 0;
   private partidasPerdidas = 0;
+  private rachaVictorias = 0;
 
   constructor(
     private readonly palabras: string[],
@@ -22,6 +23,7 @@ export class Sesion {
   nuevaPartida(): void {
     if (this.partida.estaGanada()) {
       this.partidasGanadas++;
+      this.rachaVictorias++;
     } else if (this.partida.estaPerdida()) {
       this.partidasPerdidas++;
     }
@@ -41,6 +43,6 @@ export class Sesion {
   }
 
   rachaActual(): number {
-    return 0;
+    return this.rachaVictorias;
   }
 }
