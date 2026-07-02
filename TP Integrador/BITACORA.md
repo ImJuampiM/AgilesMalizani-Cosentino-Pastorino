@@ -662,3 +662,11 @@ cuando se agota el tiempo, completando el 2º ciclo de F10.
 - **22:43 — [GREEN]** Se corrigen los ATs de marcador usando `.toContainText()` y se agrega el paso `Cuando el jugador presiona "Ver pista"` al AT de "Pista de la palabra" para respetar la nueva precondición. Toda la suite verde (30 ATs, 53 UTs). 0 lint errors tras una corrección de tipos.
 
 **Estado al cierre de la sesión 12:** 53 unit tests y 30 acceptance tests en verde. Cobertura al 100%. Las features F11, F12 y F13 han sido implementadas exitosamente con ATDD, manteniendo diseño limpio y sin deuda técnica.
+
+### Corrección de UI y Modo 2 Jugadores
+> Tras probar la aplicación real, se detectó que el botón "Ver pista" carecía de estilos y que en el modo 2 Jugadores no había forma de ingresar la pista.
+
+- **22:54 — [FIX]** UI: Se agrega un input opcional para la pista en `src/ui/setup.ts` para que el Jugador 1 pueda configurar una pista en el modo de 2 jugadores. Se modifica el root `index.ts` para propagar este valor.
+- **22:54 — [FIX]** Estilos: Se agrega la clase `.ver-pista` en `styles.css` para darle estilo acorde al diseño del resto de la aplicación (bordes, color de acento, transición hover).
+- **22:54 — [VERIFY]** Se corren las suites de UT y AT y pasan 100% en verde. Se verifica manualmente que la UI no rompe la experiencia y suma la funcionalidad omitida. (`0f137e7`)
+
