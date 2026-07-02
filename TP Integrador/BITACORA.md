@@ -629,9 +629,6 @@ arrancó Malizani, aportando al reequilibrio de la rotación.
 verde. El temporizador ahora tictaquea en tiempo real y bloquea la partida
 cuando se agota el tiempo, completando el 2º ciclo de F10.
 
-### Sesión 12: Racha, Historial Persistente y Pista Revelable
-
-Se retoma el trabajo para implementar las últimas tres features de aprobación directa (F11, F12 y F13) siguiendo el proceso ATDD de doble loop, asegurando usar el correo `juanjosepastorino@gmail.com` en los commits.
 
 #### F11: Racha de Victorias (Consecutivas)
 > El marcador también muestra la cantidad de victorias consecutivas (racha). Al

@@ -223,3 +223,39 @@ UTs (`Cronometro.expirado()`):
 
 - el cronómetro no expiró mientras queda tiempo
 - el cronómetro expira cuando se agota el tiempo
+
+## Aprobación Directa — Feature 11: Racha de victorias
+
+> `Sesion` trackea la racha consecutiva de victorias. `rachaActual()` devuelve
+> cuántas partidas seguidas se ganaron desde la última derrota. Ganar y empezar
+> otra incrementa la racha; perder y empezar otra la resetea a 0. La UI muestra
+> "Racha: N" junto al marcador.
+
+UTs (`Sesion.rachaActual()`):
+
+- una sesion nueva tiene racha en cero
+- ganar una partida y empezar otra sube la racha a 1
+- ganar dos partidas seguidas y empezar otra sube la racha a 2
+- perder una partida despues de ganar resetea la racha a cero
+
+## Aprobación Directa — Feature 12: Historial persistente
+
+> El marcador (ganadas/perdidas) se persiste en almacenamiento local. Se usa un
+> seam inyectable `Almacen` (interfaz con `guardar`/`cargar`) para no depender
+> de `localStorage` en los tests. `Sesion` recibe el almacén por constructor,
+> carga al arrancar y guarda en `nuevaPartida()`.
+
+UTs (`Sesion` con `Almacen`):
+
+- una sesion nueva carga el marcador del almacen
+- nuevaPartida guarda el marcador actualizado en el almacen
+
+## Aprobación Directa — Feature 13: Pista revelable con botón
+
+> La pista no se muestra al iniciar, se revela al presionar "Ver pista". Es
+> comportamiento de UI (el dominio ya expone `pista()`). El AT cubre que la
+> pista esté oculta inicialmente y que aparezca al hacer click.
+
+AT (sin UTs de dominio nuevos — reutiliza `Ahorcado.pista()`):
+
+- la pista no se muestra al iniciar, se revela al presionar "Ver pista"

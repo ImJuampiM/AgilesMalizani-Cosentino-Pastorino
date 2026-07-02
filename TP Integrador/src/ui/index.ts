@@ -68,14 +68,14 @@ const acciones: AccionesJuego = {
   },
 };
 
-function montarJuego(palabras?: string[], rng?: () => number): void {
+function montarJuego(palabras?: string[], rng?: () => number, pistaOverride?: string): void {
   if (!root) return;
   const origen = palabras && rng ? { palabras, rng } : fuente();
   const sesion = new Sesion(
     origen.palabras,
     origen.rng,
     vidasDeNivel(nivelActual),
-    pista,
+    pistaOverride !== undefined ? pistaOverride : pista,
     new AlmacenLocalStorage()
   );
   // Seam del reloj: en producción se inyecta Date.now; los UT usan un reloj falso.
@@ -86,7 +86,7 @@ function montarJuego(palabras?: string[], rng?: () => number): void {
 
 function montarSetup(): void {
   if (!root) return;
-  mountSetup(root, (palabra) => montarJuego([palabra], () => 0));
+  mountSetup(root, (palabra, pistaSetup) => montarJuego([palabra], () => 0, pistaSetup));
 }
 
 if (modoParam === "duo" && wordParam === null) {
