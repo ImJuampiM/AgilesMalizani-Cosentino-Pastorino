@@ -50,3 +50,8 @@ it("perder una partida y empezar otra suma una perdida al marcador", () => {
   expect(sesion.perdidas()).toBe(1);
   expect(sesion.ganadas()).toBe(0);
 });
+
+it("una sesion nueva tiene racha en cero", () => {
+  const sesion = new Sesion(["GATO"], () => 0);
+  expect(sesion.rachaActual()).toBe(0);
+});
