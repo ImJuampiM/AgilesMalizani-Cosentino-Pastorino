@@ -586,3 +586,45 @@ CI del TP funcionando. Deploy a Pages montado y a la espera de habilitar Pages
 Décima feature de Aprobación Directa (Temporizador por partida) completa. La
 arrancó Malizani, aportando al reequilibrio de la rotación.
 
+---
+
+## Sesión 11 — 01/07/2026 (autor: Juan Jose Pastorino)
+
+> 2º ciclo del Temporizador (F10): "se acaba el tiempo y el jugador pierde".
+> Arranca Pastorino para reequilibrar la rotación (Lucio concentraba ~2/3 de
+> los commits, Malizani ya hizo el 1er ciclo de F10). Entorno verificado al
+> inicio: `git pull` al día, 45 UT y 26 AT en verde antes de tocar nada.
+
+### Aprobación Directa — Feature 10 (2º ciclo): Temporizador expira
+
+> El cronómetro tictaquea (setInterval cada 500ms) y cuando se agota el tiempo
+> la partida queda bloqueada con el mensaje "Se acabó el tiempo". El dominio
+> expone `Cronometro.expirado(): boolean` (devuelve `true` cuando
+> `tiempoRestante() <= 0`). La UI trata la expiración como un tercer estado
+> terminal, igual que `estaGanada()` o `estaPerdida()`: bloquea el teclado y
+> el input. Para el AT determinista se usa `?tiempo=1` (1 segundo).
+
+- **22:12 — [RED]** Acceptance Test "Se acaba el tiempo y el jugador pierde":
+  con `?word=GATO&tiempo=1`, esperar que `data-testid="message"` muestre
+  "Se acabó el tiempo". Falla: el elemento `message` no aparece porque la UI
+  no tictaquea ni detecta expiración. Los 26 ATs anteriores siguen en verde.
+  Rojo honesto confirmado antes de tocar producción. (`75fea8c`)
+- **22:14 — [RED]** Unit Test: el cronómetro no expiró mientras queda tiempo
+  (`expirado()` devuelve `false`). Falla: `cronometro.expirado is not a
+  function`. Los 45 UT anteriores siguen en verde. (`6820e57`)
+- **22:15 — [GREEN]** `Cronometro.expirado()` devuelve
+  `this.tiempoRestante() <= 0`. 46 UT en verde. (`74d7e8a`)
+- **22:15 — [TEST]** Se documenta que el cronómetro expira cuando se agota el
+  tiempo (reloj en el límite exacto → `expirado()` true). Ya estaba verde
+  porque la fórmula general fue implementada en el paso anterior. 47 UT en
+  verde. (`e7334ad`)
+- **22:17 — [GREEN]** Acceptance Test en verde: `mountApp` ahora arranca un
+  `setInterval` de 500ms que re-renderiza cuando hay cronómetro; si
+  `cronometro.expirado()` muestra "Se acabó el tiempo" y bloquea el
+  input/teclado (misma lógica que estaGanada/estaPerdida). El interval se
+  auto-limpia al expirar. 27 acceptance tests en verde, lint OK, cobertura
+  100%. Verificado en navegador real. (`e165c7c`)
+
+**Estado al cierre de la sesión 11:** 47 unit tests y 27 acceptance tests en
+verde. El temporizador ahora tictaquea en tiempo real y bloquea la partida
+cuando se agota el tiempo, completando el 2º ciclo de F10.
