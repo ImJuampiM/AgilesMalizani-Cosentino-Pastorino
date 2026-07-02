@@ -55,3 +55,12 @@ it("una sesion nueva tiene racha en cero", () => {
   const sesion = new Sesion(["GATO"], () => 0);
   expect(sesion.rachaActual()).toBe(0);
 });
+
+it("ganar una partida y empezar otra sube la racha a 1", () => {
+  const sesion = new Sesion(["SOL"], () => 0);
+  sesion.partidaActual().adivinar("S");
+  sesion.partidaActual().adivinar("O");
+  sesion.partidaActual().adivinar("L");
+  sesion.nuevaPartida();
+  expect(sesion.rachaActual()).toBe(1);
+});
