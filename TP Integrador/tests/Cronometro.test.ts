@@ -24,3 +24,10 @@ it("el cronómetro no expiró mientras queda tiempo", () => {
   const cronometro = new Cronometro(30, () => 1000);
   expect(cronometro.expirado()).toBe(false);
 });
+
+it("el cronómetro expira cuando se agota el tiempo", () => {
+  let ahora = 1000;
+  const cronometro = new Cronometro(30, () => ahora);
+  ahora = 31000; // pasaron exactamente 30 segundos (el límite)
+  expect(cronometro.expirado()).toBe(true);
+});
