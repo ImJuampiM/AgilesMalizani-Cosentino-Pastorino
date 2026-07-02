@@ -98,3 +98,11 @@ Then("se ve el tiempo restante {string}", async ({ page }, segundos: string) => 
 Then("se ve la racha {string}", async ({ page }, racha: string) => {
   await expect(page.getByTestId("streak")).toHaveText(racha);
 });
+
+When("el jugador recarga la pagina", async ({ page }) => {
+  await page.reload();
+});
+
+Then("el marcador es {string}", async ({ page }, marcador: string) => {
+  await expect(page.getByTestId("scoreboard")).toContainText(marcador);
+});
