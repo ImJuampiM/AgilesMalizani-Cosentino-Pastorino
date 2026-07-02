@@ -4,6 +4,8 @@ import { vidasDeNivel } from "../domain/niveles";
 import { mountApp, AccionesJuego } from "./main";
 import { mountSetup } from "./setup";
 
+import { AlmacenLocalStorage } from "../infrastructure/AlmacenLocalStorage";
+
 // PERRO queda primera a propósito: el AT "palabra al azar" usa ?seed=0 y
 // espera la palabra del índice 0 (5 letras).
 const PALABRAS = [
@@ -69,7 +71,13 @@ const acciones: AccionesJuego = {
 function montarJuego(palabras?: string[], rng?: () => number): void {
   if (!root) return;
   const origen = palabras && rng ? { palabras, rng } : fuente();
-  const sesion = new Sesion(origen.palabras, origen.rng, vidasDeNivel(nivelActual), pista);
+  const sesion = new Sesion(
+    origen.palabras,
+    origen.rng,
+    vidasDeNivel(nivelActual),
+    pista,
+    new AlmacenLocalStorage()
+  );
   // Seam del reloj: en producción se inyecta Date.now; los UT usan un reloj falso.
   const cronometro =
     tiempoParam !== null ? new Cronometro(Number(tiempoParam), Date.now) : undefined;
