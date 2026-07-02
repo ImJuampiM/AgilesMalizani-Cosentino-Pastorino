@@ -12,4 +12,8 @@ export class Cronometro {
     const transcurridos = Math.floor((this.reloj() - this.inicio) / 1000);
     return Math.max(0, this.limiteSegundos - transcurridos);
   }
+
+  expirado(): boolean {
+    return this.tiempoRestante() <= 0;
+  }
 }
