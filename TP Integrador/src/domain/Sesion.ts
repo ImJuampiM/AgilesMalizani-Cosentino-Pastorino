@@ -1,5 +1,6 @@
 import { Ahorcado } from "./Ahorcado";
 import { elegirPalabra } from "./elegirPalabra";
+import { Almacen } from "./Almacen";
 
 export class Sesion {
   private partida: Ahorcado;
@@ -12,8 +13,17 @@ export class Sesion {
     private readonly rng: () => number,
     private readonly vidas: number = 6,
     private readonly pista: string = "",
+    private readonly almacen?: Almacen,
   ) {
     this.partida = new Ahorcado(elegirPalabra(palabras, rng), vidas, pista);
+    if (this.almacen) {
+      const datos = this.almacen.cargar();
+      if (datos) {
+        this.partidasGanadas = datos.ganadas;
+        this.partidasPerdidas = datos.perdidas;
+        this.rachaVictorias = datos.racha;
+      }
+    }
   }
 
   partidaActual(): Ahorcado {
