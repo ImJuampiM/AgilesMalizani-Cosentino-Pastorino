@@ -94,3 +94,7 @@ Then("se ve la pantalla del jugador 1", async ({ page }) => {
 Then("se ve el tiempo restante {string}", async ({ page }, segundos: string) => {
   await expect(page.getByTestId("timer")).toHaveText(segundos);
 });
+
+Then("se ve la racha {string}", async ({ page }, racha: string) => {
+  await expect(page.getByTestId("streak")).toHaveText(racha);
+});
