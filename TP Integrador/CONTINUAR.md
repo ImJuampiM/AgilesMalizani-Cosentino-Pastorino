@@ -14,9 +14,7 @@ donde quedó, sin tener que re-explicar nada.
 
 ---
 
-## 🟢 PROMPT DE HANDOFF — pegá esto para retomar (estado al HEAD 671755f)
-
-```
+## 🟢 PROMPT DE HANDOFF — pegá esto para retomar (```
 Continuamos el TP del Ahorcado en TypeScript con ATDD de doble loop
 (Cucumber/Playwright para la UI, Vitest para el dominio), carpeta
 "TP Integrador/" del repo.
@@ -24,66 +22,39 @@ Continuamos el TP del Ahorcado en TypeScript con ATDD de doble loop
 ESTADO ACTUAL (todo verde y pusheado a origin/main, git limpio):
 
 • Escalera base de 7 ATs de la guía: COMPLETA.
-• Aprobación Directa: 10 features (F1–F10). El catálogo de la guía (F1–F9)
-  quedó agotado y F10 es una feature extra fuera de catálogo:
-  F1 Palabra al azar · F2 Dibujo progresivo · F3 Teclado en pantalla ·
-  F4 Acentos y Ñ · F5 Jugar de nuevo (Sesion) · F6 Marcador de sesión ·
-  F7 Niveles de dificultad (?nivel=) · F8 Pista (?pista=) ·
-  F9 Dos jugadores (?modo=duo, validarPalabra.ts + pantalla de setup) ·
-  F10 Temporizador por partida (?tiempo=, Cronometro.ts con seam de reloj
-  Date.now inyectable, mismo patrón que el rng de elegirPalabra).
-• UI: teclado clickeable, muñeco en SVG, estilos (tema oscuro), PANEL DE
-  CONTROLES (dificultad, "Nueva palabra", "2 jugadores") y el temporizador
-  "⏱️ N s". Los seams de URL se conservan porque los usan los ATs.
-• 45 unit tests (100% cobertura en src/) y 26 acceptance tests, todos en verde.
-• CI/CD: ci.yml = build → typecheck → ESLint (QUALITY GATE, --max-warnings 0,
-  corta el build) → unit+coverage → AT → deploy a Pages. App online:
+• Aprobación Directa: 13 features (F1–F13). El catálogo de la guía (F1–F9)
+  quedó completísimo y además sumamos:
+  F10 Temporizador por partida · F11 Racha de Victorias Consecutivas ·
+  F12 Historial Persistente (LocalStorage) · F13 Pista Revelable.
+• UI (Correcciones aplicadas): teclado clickeable, muñeco en SVG, panel de
+  controles, temporizador, marcador con historial/racha y pantalla setup
+  para 2 jugadores con soporte para escribir pistas.
+• 53 unit tests (100% cobertura en src/) y 30 acceptance tests, todos en verde.
+• CI/CD: ci.yml = build → typecheck → ESLint (QUALITY GATE, exit 0) →
+  unit+coverage → AT → deploy a Pages. App online:
   https://imjuampim.github.io/AgilesMalizani-Cosentino-Pastorino/
 
-CORRECCIÓN DEL PROFE (1ª versión):
-• Lo que BLOQUEABA (análisis estático con quality gate) YA ESTÁ RESUELTO con
-  ESLint (el tsc quedó como validación de tipos, complementario). Verificar
-  el run en Actions en verde.
-• PENDIENTE no bloqueante: rotación despareja (Lucio ~2/3 de los commits). Se
-  está reequilibrando: F10 la arrancó Malizani. Falta que sume Pastorino.
-• Observación del profe (a otro grupo) sobre "varios UT por cada AT": en
-  nuestro repo se cumple (promedio ~2,6 UT/AT). Los únicos con 1 UT son AT3
-  (Fallar) y AT4 (Ganar); la justificación (TDD minimal: el resto ya estaba
-  cubierto por AT2) quedó escrita en NOTES.md, bajo esos AT.
-
 ANTES DE ARRANCAR:
-1. git pull.  2. Node 22 LTS o superior (con Node 20.13 corren test y at igual,
-   pero el lint gate y el coverage local piden ≥20.19; en CI corre sobre 22).
+1. git pull.  2. Node 22 LTS o superior (con Node 20.13 corren test y at igual).
 3. Leé BITACORA.md (registro cronológico, AL DÍA) y NOTES.md (UTs por AT).
-4. Verificá verde: cd "TP Integrador" && npm install && npm run test (45) &&
-   npm run at (26) && npm run lint (gate, exit 0) && npm run coverage (100%).
+4. Verificá verde: cd "TP Integrador" && npm install && npm run test (53) &&
+   npm run at (30) && npm run lint (gate, exit 0) && npm run coverage (100%).
 
-TU TAREA (OBLIGATORIA — NO se cierra el TP todavía):
-• Tenés que AGREGAR AL MENOS UNA feature/mejora nueva más, con el proceso
-  completo de doble loop (AT rojo → UTs → verde → mirar la app → docs → push).
-  No vale "dar por cerrado" ni sólo refactorizar: hay que sumar algo nuevo.
-• CANDIDATA CON VENTAJA — 2º ciclo del Temporizador (F10 hoy solo MUESTRA el
-  tiempo, no tictaquea ni termina la partida):
-  - AT "se acaba el tiempo y el jugador pierde" → fuerza Cronometro.expirado()
-    en el dominio (ROJO REAL, no documentación) + un tick (setInterval) en la
-    UI que re-renderiza y muestra "Se acabó el tiempo" / bloquea el juego.
-  - Para el AT determinista: usar ?tiempo=1 y que Playwright espere el estado
-    perdido (expect(...).toHaveText auto-espera), o exponer el seam del reloj.
-• OTRAS OPCIONES equivalentes: Racha de victorias en el Marcador · Historial
-  persistente del marcador (localStorage detrás de un seam) · Pista revelable
-  con botón "Ver pista".
-• ROTACIÓN: como Lucio está sobrecargado y Malizani ya hizo F10, ESTE trabajo
-  conviene que lo arranque y commitee PASTORINO (o Malizani). Fijá tu identidad
-  de git antes de commitear (git config user.name / user.email).
+TU TAREA:
+• El TP está COMPLETAMENTE CERRADO desde el punto de vista de las exigencias
+  de Aprobación Directa de la materia (incluso lo sobrecumplimos agregando
+  más features extra y aplicando arreglos reales en UI).
+• ¿Queda algo por realizar? Funcionalmente no. Pero si el grupo lo desea,
+  se pueden sumar features extras a gusto (por ejemplo, animaciones CSS
+  al ganar/perder, sonido, soporte multi-idioma, o multiplayer online real).
+• Si no, podés dar el TP por finalizado y ayudarme a preparar la entrega.
 
-REGLAS NO NEGOCIABLES:
-• No test, no code.  • Commit RED apenas falla el test, ANTES de tocar
-  producción (el rojo es ancestro del verde); luego GREEN.  • El nombre del
-  test lo decide el grupo.  • Push solo con el tope en verde.  • Rotación real
-  de autor.  • Registrar cada paso en BITACORA.md.  • NO co-autoría de la IA.
+REGLAS NO NEGOCIABLES (Si deciden codear algo más):
+• No test, no code. • Commit RED apenas falla el test. • El nombre del
+  test lo decide el grupo. • Push solo en verde. • Registrar todo en
+  BITACORA.md.
 
-Decime qué entendiste y CON QUÉ feature nueva vas a arrancar (no se cierra
-el TP sin sumar al menos una más).
+Decime qué entendiste y si damos el TP por cerrado o sumamos algo extra.
 ```
 
 ---
