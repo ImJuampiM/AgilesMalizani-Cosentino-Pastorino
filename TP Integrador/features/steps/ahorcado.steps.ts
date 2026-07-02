@@ -106,3 +106,7 @@ When("el jugador recarga la pagina", async ({ page }) => {
 Then("el marcador es {string}", async ({ page }, marcador: string) => {
   await expect(page.getByTestId("scoreboard")).toContainText(marcador);
 });
+
+Then("no se ve la pista", async ({ page }) => {
+  await expect(page.getByTestId("hint")).not.toBeVisible();
+});
