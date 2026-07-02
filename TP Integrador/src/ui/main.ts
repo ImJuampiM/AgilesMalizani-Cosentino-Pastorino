@@ -47,16 +47,20 @@ export function mountApp(
   cronometro?: Cronometro,
 ): void {
   let mensajeAviso = "";
+  let tickId: ReturnType<typeof setInterval> | undefined;
 
   function render(): void {
     const juego = sesion.partidaActual();
-    const terminada = juego.estaGanada() || juego.estaPerdida();
+    const tiempoAgotado = cronometro !== undefined && cronometro.expirado();
+    const terminada = juego.estaGanada() || juego.estaPerdida() || tiempoAgotado;
 
     let mensaje = "";
     if (juego.estaGanada()) {
       mensaje = `<div data-testid="message">GANASTE</div>`;
     } else if (juego.estaPerdida()) {
       mensaje = `<div data-testid="message">PERDISTE</div>`;
+    } else if (tiempoAgotado) {
+      mensaje = `<div data-testid="message">Se acabó el tiempo</div>`;
     } else if (mensajeAviso) {
       mensaje = `<div data-testid="message">${mensajeAviso}</div>`;
     }
@@ -158,5 +162,21 @@ export function mountApp(
     });
   }
 
+  // Limpiar interval previo (por si mountApp se re-llama al reiniciar).
+  if (tickId !== undefined) clearInterval(tickId);
+
   render();
+
+  // Si hay cronómetro, tictaquear cada 500ms para actualizar el tiempo y
+  // detectar la expiración. Se detiene solo cuando el cronómetro expira
+  // (la partida queda bloqueada en ese render).
+  if (cronometro) {
+    tickId = setInterval(() => {
+      render();
+      if (cronometro.expirado()) {
+        clearInterval(tickId);
+        tickId = undefined;
+      }
+    }, 500);
+  }
 }
