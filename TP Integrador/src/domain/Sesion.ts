@@ -26,6 +26,7 @@ export class Sesion {
       this.rachaVictorias++;
     } else if (this.partida.estaPerdida()) {
       this.partidasPerdidas++;
+      this.rachaVictorias = 0;
     }
     this.partida = new Ahorcado(
       elegirPalabra(this.palabras, this.rng),
