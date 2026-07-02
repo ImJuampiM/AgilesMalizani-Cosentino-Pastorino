@@ -64,3 +64,16 @@ it("ganar una partida y empezar otra sube la racha a 1", () => {
   sesion.nuevaPartida();
   expect(sesion.rachaActual()).toBe(1);
 });
+
+it("ganar dos partidas seguidas y empezar otra sube la racha a 2", () => {
+  const sesion = new Sesion(["SOL"], () => 0);
+  sesion.partidaActual().adivinar("S");
+  sesion.partidaActual().adivinar("O");
+  sesion.partidaActual().adivinar("L");
+  sesion.nuevaPartida();
+  sesion.partidaActual().adivinar("S");
+  sesion.partidaActual().adivinar("O");
+  sesion.partidaActual().adivinar("L");
+  sesion.nuevaPartida();
+  expect(sesion.rachaActual()).toBe(2);
+});
