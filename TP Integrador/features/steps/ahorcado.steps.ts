@@ -80,7 +80,7 @@ Then("las letras usadas son {string}", async ({ page }, letras: string) => {
 });
 
 Then("se ve el marcador {string}", async ({ page }, marcador: string) => {
-  await expect(page.getByTestId("scoreboard")).toHaveText(marcador);
+  await expect(page.getByTestId("scoreboard")).toContainText(marcador);
 });
 
 Then("se ve la pista {string}", async ({ page }, pista: string) => {

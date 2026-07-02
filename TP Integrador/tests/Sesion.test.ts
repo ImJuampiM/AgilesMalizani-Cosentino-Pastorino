@@ -1,5 +1,6 @@
 import { it, expect } from "vitest";
 import { Sesion } from "../src/domain/Sesion";
+import { DatosMarcador } from "../src/domain/Almacen";
 
 it("una sesion nueva tiene una partida en curso con la palabra enmascarada y 6 vidas", () => {
   const sesion = new Sesion(["GATO"], () => 0);
@@ -103,10 +104,10 @@ it("una sesion nueva carga el marcador del almacen", () => {
 });
 
 it("nuevaPartida guarda el marcador actualizado en el almacen", () => {
-  let guardado: any = null;
+  let guardado: DatosMarcador | null = null;
   const almacenFake = {
     cargar: () => null,
-    guardar: (datos: any) => { guardado = datos; },
+    guardar: (datos: DatosMarcador) => { guardado = datos; },
   };
   const sesion = new Sesion(["GATO"], () => 0, 6, "", almacenFake);
   sesion.partidaActual().adivinar("G");

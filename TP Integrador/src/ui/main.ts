@@ -47,6 +47,7 @@ export function mountApp(
   cronometro?: Cronometro,
 ): void {
   let mensajeAviso = "";
+  let pistaRevelada = false;
   let tickId: ReturnType<typeof setInterval> | undefined;
 
   function render(): void {
@@ -69,9 +70,14 @@ export function mountApp(
       ? `<button data-testid="play-again">Jugar de nuevo</button>`
       : "";
 
-    const pista = juego.pista()
-      ? `<div class="pista" data-testid="hint">Pista: ${juego.pista()}</div>`
-      : "";
+    let pistaHtml = "";
+    if (juego.pista()) {
+      if (pistaRevelada) {
+        pistaHtml = `<div class="pista" data-testid="hint">Pista: ${juego.pista()}</div>`;
+      } else {
+        pistaHtml = `<button class="ver-pista" data-accion="ver-pista">Ver pista</button>`;
+      }
+    }
 
     const teclado = LETRAS.map((letra) => {
       const deshabilitada = juego.letrasUsadas().includes(letra) || terminada;
@@ -102,7 +108,7 @@ export function mountApp(
             <div class="vidas">❤️ <span data-testid="lives">${juego.vidasRestantes()}</span> vidas</div>
             ${cronometro ? `<div class="tiempo">⏱️ <span data-testid="timer">${cronometro.tiempoRestante()}</span> s</div>` : ""}
             <div class="palabra" data-testid="word">${terminada ? juego.palabraRevelada() : juego.palabraEnmascarada()}</div>
-            ${pista}
+            ${pistaHtml}
             <span class="sr-only" data-testid="hangman">${juego.partesVisibles().join(", ")}</span>
             <span class="sr-only" data-testid="used-keys">${juego.letrasUsadas().join(", ")}</span>
             <input type="text" maxlength="1" placeholder="Escribí una letra y Enter" />
@@ -147,6 +153,7 @@ export function mountApp(
       .addEventListener("click", () => {
         sesion.nuevaPartida();
         mensajeAviso = "";
+        pistaRevelada = false;
         render();
       });
 
@@ -158,6 +165,13 @@ export function mountApp(
     botonReinicio?.addEventListener("click", () => {
       sesion.nuevaPartida();
       mensajeAviso = "";
+      pistaRevelada = false;
+      render();
+    });
+
+    const botonPista = root.querySelector<HTMLButtonElement>('[data-accion="ver-pista"]');
+    botonPista?.addEventListener("click", () => {
+      pistaRevelada = true;
       render();
     });
   }
