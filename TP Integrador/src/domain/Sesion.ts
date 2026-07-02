@@ -39,4 +39,8 @@ export class Sesion {
   perdidas(): number {
     return this.partidasPerdidas;
   }
+
+  rachaActual(): number {
+    return 0;
+  }
 }
