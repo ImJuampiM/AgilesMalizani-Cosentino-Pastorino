@@ -19,3 +19,8 @@ it("el tiempo restante no baja de cero cuando se pasa del límite", () => {
   ahora = 41000; // pasaron 40 segundos, más que el límite de 30
   expect(cronometro.tiempoRestante()).toBe(0);
 });
+
+it("el cronómetro no expiró mientras queda tiempo", () => {
+  const cronometro = new Cronometro(30, () => 1000);
+  expect(cronometro.expirado()).toBe(false);
+});

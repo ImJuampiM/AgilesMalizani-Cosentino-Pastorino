@@ -211,3 +211,15 @@ UTs (`Cronometro(limiteSegundos: number, reloj: () => number)`):
 - el tiempo restante baja según los segundos transcurridos
 - el tiempo restante no baja de cero cuando se pasa del límite
 
+## Aprobación Directa — Feature 10 (2º ciclo): Temporizador expira
+
+> Cuando se acaba el tiempo, el jugador pierde. `Cronometro` expone
+> `expirado(): boolean` que devuelve `true` cuando `tiempoRestante()` llega a
+> 0. La UI arranca un `setInterval` que re-renderiza y, si `expirado()`,
+> muestra "Se acabó el tiempo" y bloquea el input/teclado (misma traducción
+> que ya hace para `estaGanada()`/`estaPerdida()`).
+
+UTs (`Cronometro.expirado()`):
+
+- el cronómetro no expiró mientras queda tiempo
+- el cronómetro expira cuando se agota el tiempo
