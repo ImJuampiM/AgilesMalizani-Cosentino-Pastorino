@@ -259,3 +259,23 @@ UTs (`Sesion` con `Almacen`):
 AT (sin UTs de dominio nuevos — reutiliza `Ahorcado.pista()`):
 
 - la pista no se muestra al iniciar, se revela al presionar "Ver pista"
+
+## Arreglos del temporizador (F10) — perder por tiempo
+
+> Se detectaron 3 bugs del temporizador y se arreglaron con el ciclo de siempre:
+> (1) el reloj seguía corriendo tras ganar; (2) al perder por tiempo no se podía
+> volver a jugar (el cronómetro quedaba expirado); (3) perder por tiempo no
+> contaba como derrota ni reseteaba la racha (el dominio no se enteraba).
+>
+> Raíz: la derrota por tiempo era sólo de UI. Se llevó al dominio con
+> `Ahorcado.perderPorTiempo()` (hace `estaPerdida()` = true). La UI la invoca al
+> expirar, recrea el cronómetro al reiniciar (factory) y lo frena al terminar.
+
+UTs:
+
+- una partida perdida por tiempo queda perdida (`Ahorcado.perderPorTiempo()`)
+- perder por tiempo y empezar otra cuenta una derrota y resetea la racha (`Sesion`)
+
+AT:
+
+- tras perder por tiempo, el jugador puede volver a jugar

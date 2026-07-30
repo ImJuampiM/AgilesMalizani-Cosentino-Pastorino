@@ -670,3 +670,18 @@ cuando se agota el tiempo, completando el 2º ciclo de F10.
 - **22:54 — [FIX]** Estilos: Se agrega la clase `.ver-pista` en `styles.css` para darle estilo acorde al diseño del resto de la aplicación (bordes, color de acento, transición hover).
 - **22:54 — [VERIFY]** Se corren las suites de UT y AT y pasan 100% en verde. Se verifica manualmente que la UI no rompe la experiencia y suma la funcionalidad omitida. (`0f137e7`)
 
+### Arreglos del temporizador (F10) — 3 bugs detectados al probar
+
+> Al probar la app se detectaron 3 bugs del temporizador: (1) el reloj seguía
+> corriendo tras ganar; (2) al perder por tiempo no se podía volver a jugar; (3)
+> perder por tiempo no contaba como derrota ni reseteaba la racha. Raíz común: la
+> derrota por tiempo vivía sólo en la UI, desconectada del dominio.
+
+- **[RED]** Unit Test: una partida perdida por tiempo queda perdida. Falla porque `perderPorTiempo()` no existe. Los 53 UT anteriores siguen en verde. (`07fe344`)
+- **[GREEN]** `Ahorcado.perderPorTiempo()` marca la partida como perdida (`estaPerdida()` lo refleja). 54 UT en verde. Arregla el bug 3 de raíz. (`1884385`)
+- **[TEST]** Unit Test: perder por tiempo y empezar otra cuenta una derrota y resetea la racha. Ya queda verde porque `Sesion` usa `estaPerdida()`. 55 UT en verde. (`9727dc5`)
+- **[RED]** Acceptance Test: tras perder por tiempo, el jugador puede volver a jugar. Falla porque el cronómetro quedaba expirado y la partida nueva arrancaba terminada. (`84bd63a`)
+- **[GREEN]** UI: `mountApp` recibe una **factory** de cronómetro (lo recrea en cada partida → bug 2), invoca `perderPorTiempo()` al expirar, y **frena el tick al terminar** la partida (por jugada o tiempo → bug 1). 55 UT y 31 AT en verde. Verificado en navegador: tras ganar, el timer queda congelado. (`c0b5a03`)
+
+**Estado tras los arreglos:** 55 unit tests y 31 acceptance tests en verde. El temporizador ahora se detiene al ganar, permite volver a jugar tras perder por tiempo, y esa derrota cuenta en el marcador y resetea la racha.
+
