@@ -1,6 +1,7 @@
 export class Ahorcado {
   private readonly adivinadas = new Set<string>();
   private fallos = 0;
+  private tiempoAgotado = false;
 
   constructor(
     private readonly palabra: string,
@@ -61,8 +62,12 @@ export class Ahorcado {
       .every((letra) => this.adivinadas.has(this.quitarAcentos(letra)));
   }
 
+  perderPorTiempo(): void {
+    this.tiempoAgotado = true;
+  }
+
   estaPerdida(): boolean {
-    return this.vidasRestantes() <= 0;
+    return this.tiempoAgotado || this.vidasRestantes() <= 0;
   }
 
   private static readonly PARTES = [
