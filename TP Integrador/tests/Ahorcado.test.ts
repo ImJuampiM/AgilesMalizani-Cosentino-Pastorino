@@ -186,4 +186,10 @@ it("la ñ no se normaliza a n (son letras distintas)", () => {
   expect(juego.vidasRestantes()).toBe(5);
 });
 
+it("una partida perdida por tiempo queda perdida", () => {
+  const juego = new Ahorcado("GATO");
+  juego.perderPorTiempo();
+  expect(juego.estaPerdida()).toBe(true);
+});
+
 
