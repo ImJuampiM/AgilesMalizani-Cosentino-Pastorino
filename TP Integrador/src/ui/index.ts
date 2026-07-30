@@ -79,9 +79,10 @@ function montarJuego(palabras?: string[], rng?: () => number, pistaOverride?: st
     new AlmacenLocalStorage()
   );
   // Seam del reloj: en producción se inyecta Date.now; los UT usan un reloj falso.
-  const cronometro =
-    tiempoParam !== null ? new Cronometro(Number(tiempoParam), Date.now) : undefined;
-  mountApp(root, sesion, acciones, nivelActual, cronometro);
+  // Se pasa una factory para poder crear un cronómetro nuevo en cada partida.
+  const crearCronometro =
+    tiempoParam !== null ? () => new Cronometro(Number(tiempoParam), Date.now) : undefined;
+  mountApp(root, sesion, acciones, nivelActual, crearCronometro);
 }
 
 function montarSetup(): void {

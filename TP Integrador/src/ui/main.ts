@@ -44,11 +44,46 @@ export function mountApp(
   sesion: Sesion,
   acciones: AccionesJuego,
   nivel = "normal",
-  cronometro?: Cronometro,
+  crearCronometro?: () => Cronometro,
 ): void {
   let mensajeAviso = "";
   let pistaRevelada = false;
   let tickId: ReturnType<typeof setInterval> | undefined;
+  // El cronómetro se crea por factory para poder renovarlo en cada partida.
+  let cronometro = crearCronometro?.();
+
+  function pararTick(): void {
+    if (tickId !== undefined) {
+      clearInterval(tickId);
+      tickId = undefined;
+    }
+  }
+
+  function iniciarTick(): void {
+    pararTick();
+    const c = cronometro;
+    if (!c) return;
+    tickId = setInterval(() => {
+      const juego = sesion.partidaActual();
+      // Al agotarse el tiempo, la derrota pasa al dominio (cuenta y resetea racha).
+      if (c.expirado() && !juego.estaGanada() && !juego.estaPerdida()) {
+        juego.perderPorTiempo();
+      }
+      render();
+      if (juego.estaGanada() || juego.estaPerdida()) {
+        pararTick(); // frenar el reloj cuando la partida terminó
+      }
+    }, 500);
+  }
+
+  function reiniciar(): void {
+    sesion.nuevaPartida();
+    cronometro = crearCronometro?.(); // partida nueva → cronómetro nuevo
+    mensajeAviso = "";
+    pistaRevelada = false;
+    render();
+    iniciarTick();
+  }
 
   function render(): void {
     const juego = sesion.partidaActual();
@@ -58,10 +93,10 @@ export function mountApp(
     let mensaje = "";
     if (juego.estaGanada()) {
       mensaje = `<div data-testid="message">GANASTE</div>`;
-    } else if (juego.estaPerdida()) {
-      mensaje = `<div data-testid="message">PERDISTE</div>`;
     } else if (tiempoAgotado) {
       mensaje = `<div data-testid="message">Se acabó el tiempo</div>`;
+    } else if (juego.estaPerdida()) {
+      mensaje = `<div data-testid="message">PERDISTE</div>`;
     } else if (mensajeAviso) {
       mensaje = `<div data-testid="message">${mensajeAviso}</div>`;
     }
@@ -131,6 +166,9 @@ export function mountApp(
         mensajeAviso = "";
       }
       render();
+      if (juego.estaGanada() || juego.estaPerdida()) {
+        pararTick(); // al terminar por jugada, el reloj se detiene
+      }
     }
 
     const input = root.querySelector("input")!;
@@ -150,24 +188,14 @@ export function mountApp(
 
     root
       .querySelector<HTMLButtonElement>('[data-accion="nueva"]')!
-      .addEventListener("click", () => {
-        sesion.nuevaPartida();
-        mensajeAviso = "";
-        pistaRevelada = false;
-        render();
-      });
+      .addEventListener("click", reiniciar);
 
     root
       .querySelector<HTMLButtonElement>('[data-accion="duo"]')!
       .addEventListener("click", () => acciones.modoDosJugadores());
 
     const botonReinicio = root.querySelector<HTMLButtonElement>('[data-testid="play-again"]');
-    botonReinicio?.addEventListener("click", () => {
-      sesion.nuevaPartida();
-      mensajeAviso = "";
-      pistaRevelada = false;
-      render();
-    });
+    botonReinicio?.addEventListener("click", reiniciar);
 
     const botonPista = root.querySelector<HTMLButtonElement>('[data-accion="ver-pista"]');
     botonPista?.addEventListener("click", () => {
@@ -176,21 +204,8 @@ export function mountApp(
     });
   }
 
-  // Limpiar interval previo (por si mountApp se re-llama al reiniciar).
-  if (tickId !== undefined) clearInterval(tickId);
-
   render();
-
-  // Si hay cronómetro, tictaquear cada 500ms para actualizar el tiempo y
-  // detectar la expiración. Se detiene solo cuando el cronómetro expira
-  // (la partida queda bloqueada en ese render).
-  if (cronometro) {
-    tickId = setInterval(() => {
-      render();
-      if (cronometro.expirado()) {
-        clearInterval(tickId);
-        tickId = undefined;
-      }
-    }, 500);
-  }
+  // Si hay cronómetro, tictaquea cada 500ms para refrescar el tiempo y detectar
+  // la expiración; se detiene solo cuando la partida termina (por jugada o tiempo).
+  iniciarTick();
 }
