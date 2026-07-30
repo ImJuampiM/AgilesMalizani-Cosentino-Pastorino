@@ -118,3 +118,18 @@ it("nuevaPartida guarda el marcador actualizado en el almacen", () => {
   
   expect(guardado).toEqual({ ganadas: 1, perdidas: 0, racha: 1 });
 });
+
+it("perder por tiempo y empezar otra cuenta una derrota y resetea la racha", () => {
+  const sesion = new Sesion(["GATO"], () => 0);
+  sesion.partidaActual().adivinar("G");
+  sesion.partidaActual().adivinar("A");
+  sesion.partidaActual().adivinar("T");
+  sesion.partidaActual().adivinar("O");
+  sesion.nuevaPartida();
+  expect(sesion.rachaActual()).toBe(1);
+
+  sesion.partidaActual().perderPorTiempo();
+  sesion.nuevaPartida();
+  expect(sesion.perdidas()).toBe(1);
+  expect(sesion.rachaActual()).toBe(0);
+});
